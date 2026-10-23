@@ -105,7 +105,9 @@ themes:
       - nota técnica
       - agenda regulatória
       - reunião pública
-      - portaria
+      - resolução CNPE
+      - política energética
+      - portaria normativa
 
   saneamento_gas:
     label: "Saneamento e gás (temas setoriais)"
@@ -123,30 +125,103 @@ themes:
       - aditivo contratual
       - termo aditivo
 
+  combustiveis:
+    label: "Distribuição de combustíveis"
+    priority: alta
+    keywords:
+      - distribuição de combustíveis
+      - distribuidor de combustíveis
+      - distribuidora de combustíveis
+      - distribuidoras de combustíveis
+      - mistura obrigatória
+      - mistura de biodiesel
+      - teor de biodiesel
+      - percentual obrigatório
+      - etanol anidro
+      - metas compulsórias
+      - metas de descarbonização
+      - CBIO
+      - RenovaBio
+      - Combustível do Futuro
+      - devedor contumaz
+      - sonegação
+      - adulteração
+      - mercado irregular
+      - fraude fiscal
+      - ICMS monofásico
+      - ad rem
+      - preço do diesel
+      - preço da gasolina
+      - importação de diesel
+      - importação de combustíveis
+      - marcador de combustíveis
+
+  leiloes:
+    label: "Leilões"
+    priority: alta
+    keywords:
+      - leilão de energia
+      - leilão de transmissão
+      - leilão de reserva de capacidade
+      - LRCAP
+      - leilão de energia nova
+      - leilão de energia existente
+      - leilão A-
+      - leilão de sistemas isolados
+
+  mercado_operacao:
+    label: "Mercado e operação do sistema"
+    priority: media
+    keywords:
+      - PLD
+      - preço de liquidação
+      - mercado livre
+      - abertura do mercado
+      - GSF
+      - MRE
+      - risco hidrológico
+      - garantia física
+      - liquidação financeira
+      - inadimplência no mercado
+      - despacho térmico
+      - despacho fora da ordem de mérito
+      - operação do sistema
+      - carga de energia
+      - Programa Mensal da Operação
+      - PMO
+      - reservatórios
+
   # Coloque aqui as empresas da sua cobertura: qualquer menção já é relevante.
   empresas:
     label: "Empresas cobertas"
     priority: alta
     keywords:
-      - Sabesp
-      - Copasa
-      - Sanepar
-      - Comgás
-      - Necta
-      - Copel
-      - Cemig
-      - Eletrobras
-      - Energisa
-      - Equatorial
-      - Neoenergia
-      - CPFL
-      - Enel
-      - Light
+      - Alupar
       - Taesa
       - ISA Energia
-      - Alupar
-      - Engie
+      - Cemig
+      - CPFL
+      - Copel
+      - Equatorial
+      - Energisa
+      - Light
+      - Axia
+      - Eletrobras
       - Auren
+      - Engie
+      - Eneva
+      - Sabesp
+      - Sanepar
+      - Copasa
+      - Compass
+      - Comgás
+      - Orizon
+      - Raízen
+      - Vibra
+      - Ultrapar
+      - Ipiranga
+      - Cosan
+      - São Martinho
 
 # Itens com estes termos são descartados (ruído comum em sites de agências)
 exclude:
@@ -160,6 +235,20 @@ exclude:
   - campanha de vacinação
   - semana do servidor
   - ouvidoria itinerante
+  # ruído típico de Diário Oficial
+  - extrato de contrato
+  - aviso de licitação
+  - nomear
+  - exonerar
+  - aposentadoria
+  - pensão
+  - diárias
+  - férias
+  - REIDI
+  - projeto prioritário
+  - revenda varejista
+  - ponto de abastecimento
+  - transportador-revendedor-retalhista
 
 # ---------------------------------------------------------------------
 # FONTES
@@ -174,6 +263,32 @@ exclude:
 #   verify_ssl: false  -> use se o site da agência tiver certificado quebrado
 # ---------------------------------------------------------------------
 sources:
+
+  # ======================= FEDERAL =======================
+
+  # ---------------- MME (e CNPE) ----------------
+  - name: "MME — Diário Oficial da União"
+    agency: MME
+    sector: Energia/Combustíveis
+    type: dou
+    query: '"Ministério de Minas e Energia"'
+    section: do1
+    require_match: true
+
+  - name: "CNPE — Diário Oficial da União"
+    agency: MME
+    sector: Energia/Combustíveis
+    type: dou
+    query: '"Conselho Nacional de Política Energética"'
+    section: do1
+    require_match: false
+
+  - name: "MME — Notícias"
+    agency: MME
+    sector: Energia/Combustíveis
+    type: html
+    url: https://www.gov.br/mme/pt-br/assuntos/noticias
+    require_match: true
 
   # ---------------- ANEEL ----------------
   - name: "ANEEL — Diário Oficial da União"
@@ -191,21 +306,115 @@ sources:
     url: https://www.gov.br/aneel/pt-br/assuntos/noticias
     require_match: true
 
-  - name: "ANEEL — Na imprensa (Google Notícias)"
+  - name: "ANEEL — Na imprensa"
     agency: ANEEL
     sector: Energia
     type: rss
     url: 'https://news.google.com/rss/search?q=ANEEL+(%22revis%C3%A3o+tarif%C3%A1ria%22+OR+reajuste+OR+curtailment+OR+encargo+OR+CDE+OR+metodologia)+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
     require_match: true
 
-  - name: "Curtailment — Na imprensa (Google Notícias)"
-    agency: ONS/ANEEL
+  # ---------------- ONS ----------------
+  - name: "ONS — Site"
+    agency: ONS
+    sector: Energia
+    type: html
+    url: https://www.ons.org.br/
+    require_match: true
+
+  - name: "ONS — Na imprensa"
+    agency: ONS
     sector: Energia
     type: rss
-    url: 'https://news.google.com/rss/search?q=(curtailment+OR+%22corte+de+gera%C3%A7%C3%A3o%22+OR+%22constrained-off%22)+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    url: 'https://news.google.com/rss/search?q=(%22Operador+Nacional+do+Sistema%22+OR+(ONS+energia)+OR+curtailment+OR+%22corte+de+gera%C3%A7%C3%A3o%22)+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: true
+
+  # ---------------- CCEE ----------------
+  - name: "CCEE — Site"
+    agency: CCEE
+    sector: Energia
+    type: html
+    url: https://www.ccee.org.br/
     require_match: false
 
-  # ---------------- ARSESP (SP: gás e saneamento) ----------------
+  - name: "CCEE — Na imprensa"
+    agency: CCEE
+    sector: Energia
+    type: rss
+    url: 'https://news.google.com/rss/search?q=CCEE+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: false
+
+  # ---------------- ANA (saneamento) ----------------
+  - name: "ANA — Diário Oficial da União"
+    agency: ANA
+    sector: Saneamento
+    type: dou
+    query: '"Agência Nacional de Águas e Saneamento Básico"'
+    section: do1
+    require_match: true
+
+  - name: "ANA — Notícias"
+    agency: ANA
+    sector: Saneamento
+    type: html
+    url: https://www.gov.br/ana/pt-br/assuntos/noticias-e-eventos/noticias
+    require_match: true
+
+  # ---------------- ANP (distribuição de combustíveis) ----------------
+  - name: "ANP — Diário Oficial da União"
+    agency: ANP
+    sector: Combustíveis
+    type: dou
+    query: '"Agência Nacional do Petróleo, Gás Natural e Biocombustíveis"'
+    section: do1
+    require_match: true
+
+  - name: "ANP — Notícias"
+    agency: ANP
+    sector: Combustíveis
+    type: html
+    url: https://www.gov.br/anp/pt-br/canais_atendimento/imprensa/noticias-comunicados
+    require_match: true
+
+  - name: "ANP — Na imprensa"
+    agency: ANP
+    sector: Combustíveis
+    type: rss
+    url: 'https://news.google.com/rss/search?q=ANP+(distribuidoras+OR+distribui%C3%A7%C3%A3o+OR+combust%C3%ADveis+OR+mistura+OR+fiscaliza%C3%A7%C3%A3o)+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: true
+
+  # ---------------- ICL (Instituto Combustível Legal) ----------------
+  - name: "ICL — Site"
+    agency: ICL
+    sector: Combustíveis
+    type: html
+    url: https://institutocombustivellegal.org.br/
+    require_match: false
+
+  - name: "ICL — Na imprensa"
+    agency: ICL
+    sector: Combustíveis
+    type: rss
+    url: 'https://news.google.com/rss/search?q=%22Instituto+Combust%C3%ADvel+Legal%22+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: false
+
+  # ======================= ESTADUAL =======================
+
+  # ---------------- Diário Oficial de SP (só elétricas e saneamento) ----------------
+  - name: "DOE-SP — Elétricas e saneamento"
+    agency: DOE-SP
+    sector: Energia/Saneamento
+    type: doesp
+    days: 2                     # olha os últimos 2 dias a cada execução
+    terms:
+      - Arsesp
+      - Sabesp
+      - saneamento básico
+      - Universaliza SP
+      - energia elétrica
+      - concessionária de energia
+    require_match: true
+
+  # ---------------- ARSESP (SP) ----------------
   - name: "ARSESP — Site"
     agency: ARSESP
     sector: Saneamento/Gás
@@ -213,7 +422,7 @@ sources:
     url: https://www.arsesp.sp.gov.br/
     require_match: false
 
-  - name: "ARSESP — Na imprensa (Google Notícias)"
+  - name: "ARSESP — Na imprensa"
     agency: ARSESP
     sector: Saneamento/Gás
     type: rss
@@ -228,7 +437,7 @@ sources:
     url: https://www.agepar.pr.gov.br/Noticias
     require_match: false
 
-  - name: "AGEPAR — Na imprensa (Google Notícias)"
+  - name: "AGEPAR — Na imprensa"
     agency: AGEPAR
     sector: Saneamento/Gás/Rodovias
     type: rss
@@ -243,14 +452,21 @@ sources:
     url: https://www.arsae.mg.gov.br/
     require_match: false
 
-  - name: "ARSAE-MG — Na imprensa (Google Notícias)"
+  - name: "ARSAE-MG — Resoluções"
+    agency: ARSAE-MG
+    sector: Saneamento
+    type: html
+    url: https://www.arsae.mg.gov.br/category/resolucoes/
+    require_match: false
+
+  - name: "ARSAE-MG — Na imprensa"
     agency: ARSAE-MG
     sector: Saneamento
     type: rss
     url: 'https://news.google.com/rss/search?q=Arsae+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
     require_match: false
 
-  # ---------------- MODELOS para outras agências ----------------
+  # ---------------- MODELO para novas agências ----------------
   # Copie, descomente e ajuste a URL da página de notícias/atos:
   #
   # - name: "AGERGS — Site"
@@ -259,21 +475,6 @@ sources:
   #   type: html
   #   url: https://agergs.rs.gov.br/
   #   require_match: false
-  #
-  # - name: "AGERGS — Na imprensa (Google Notícias)"
-  #   agency: AGERGS
-  #   sector: Saneamento/Gás
-  #   type: rss
-  #   url: 'https://news.google.com/rss/search?q=Agergs+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
-  #   require_match: false
-  #
-  # - name: "ANA — Diário Oficial (normas de referência do saneamento)"
-  #   agency: ANA
-  #   sector: Saneamento
-  #   type: dou
-  #   query: '"Agência Nacional de Águas e Saneamento Básico"'
-  #   section: do1
-  #   require_match: true
 
 # Resumo de cada item por IA (opcional; precisa do secret ANTHROPIC_API_KEY)
 ai_summary:
@@ -380,56 +581,102 @@ news:
     - fútbol
 
   sectors:
+    # Formato por empresa:  - {ticker: SBSP3, name: Sabesp, aliases: [...]}
+    #   name e aliases são buscados no Google Notícias; o ticker também
+    #   é reconhecido no título. A etiqueta mostra "Sabesp (SBSP3)".
+    # Grupos de tema/contexto usam terms (e match, opcional), como antes.
+
     - name: Utilities
       groups:
-        - name: Energia elétrica
-          terms: [Eletrobras, Axia Energia, Copel, Cemig, Equatorial, Energisa, Neoenergia, CPFL, Engie Brasil, Auren, Taesa, ISA Energia, Alupar, Eneva, Light]
+        - name: Transmissão
+          companies:
+            - {ticker: ALUP11, name: Alupar}
+            - {ticker: TAEE11, name: Taesa}
+            - {ticker: ISAE4, name: ISA Energia, aliases: [ISA CTEEP]}
+        - name: Distribuição e integradas
+          companies:
+            - {ticker: CMIG4, name: Cemig}
+            - {ticker: CPFE3, name: CPFL, aliases: [CPFL Energia]}
+            - {ticker: CPLE3, name: Copel}
+            - {ticker: EQTL3, name: Equatorial}
+            - {ticker: ENGI11, name: Energisa}
+            - {ticker: LIGT3, name: Light}
+        - name: Geração
+          companies:
+            - {ticker: AXIA3, name: Axia Energia, aliases: [Eletrobras]}
+            - {ticker: AURE3, name: Auren, aliases: [Auren Energia]}
+            - {ticker: EGIE3, name: Engie Brasil, aliases: [Engie]}
+            - {ticker: ENEV3, name: Eneva}
         - name: Saneamento
-          terms: [Sabesp, Copasa, Sanepar, Aegea, Iguá Saneamento]
+          companies:
+            - {ticker: SBSP3, name: Sabesp}
+            - {ticker: SAPR11, name: Sanepar}
+            - {ticker: CSMG3, name: Copasa}
         - name: Gás
-          terms: [Compass Gás, Comgás, Necta Gás, gás natural]
-          match: [Compass, Comgás, Necta, gás natural]
+          companies:
+            - {ticker: PASS3, name: Compass, aliases: [Comgás, Compass Gás e Energia]}
+        - name: Resíduos
+          companies:
+            - {ticker: ORVR3, name: Orizon, aliases: [Orizon Valorização]}
         - name: Setor e regulação
-          terms: [setor elétrico, leilão de energia, leilão de transmissão, ONS, curtailment, conta de luz]
+          terms: [setor elétrico, leilão de energia, leilão de transmissão, curtailment, conta de luz, marco do saneamento]
+          match: [setor elétrico, leilão, curtailment, conta de luz, saneamento, ANEEL, ONS]
 
     - name: Bancos
       groups:
-        - name: Incumbentes
-          terms: [Itaú Unibanco, Bradesco, Banco do Brasil, Santander Brasil]
-          match: [Itaú, Bradesco, Banco do Brasil, BB, Santander]
+        - name: Grandes bancos
+          companies:
+            - {ticker: ITUB4, name: Itaú, aliases: [Itaú Unibanco]}
+            - {ticker: BBDC4, name: Bradesco}
+            - {ticker: BBAS3, name: Banco do Brasil}
+            - {ticker: SANB11, name: Santander Brasil, aliases: [Santander]}
         - name: Médios e investimento
-          terms: [BTG Pactual, Banrisul, ABC Brasil, Banco Pan, Daycoval]
-          match: [BTG, Banrisul, ABC Brasil, Banco Pan, Daycoval]
+          companies:
+            - {ticker: BPAC11, name: BTG Pactual, aliases: [BTG]}
+            - {ticker: ABCB4, name: ABC Brasil, aliases: [Banco ABC]}
+            - {ticker: BRSR6, name: Banrisul}
+            - {ticker: PINE4, name: Banco Pine}
+        - name: Digitais
+          companies:
+            - {ticker: NU, name: Nubank, aliases: [Nu Holdings]}
+            - {ticker: INTR, name: Banco Inter, aliases: [Inter&Co]}
+            - {ticker: PICS, name: PicPay}
+            - {ticker: AGBK, name: Agibank}
         - name: Setor e Banco Central
           terms: [Banco Central crédito, inadimplência, spread bancário, Copom, Febraban]
           match: [Banco Central, BC, inadimplência, spread, Copom, Febraban, crédito]
 
     - name: Non Banks
       groups:
-        - name: Digitais
-          terms: [Nubank, Banco Inter, Inter&Co, Mercado Pago, PicPay, C6 Bank]
-          match: [Nubank, Nu Holdings, Inter, Mercado Pago, PicPay, C6]
-        - name: Pagamentos
-          terms: [Stone, PagBank, PagSeguro, Cielo, Getnet, maquininhas]
-        - name: Mercado de capitais
-          terms: [B3, XP Inc, XP Investimentos, BTG Pactual Digital]
-          match: [B3, XP]
         - name: Seguros
-          terms: [BB Seguridade, Caixa Seguridade, Porto Seguro, IRB Re, Susep]
-          match: [BB Seguridade, Caixa Seguridade, Porto Seguro, IRB, Susep]
+          companies:
+            - {ticker: BBSE3, name: BB Seguridade}
+            - {ticker: CXSE3, name: Caixa Seguridade}
+            - {ticker: IRBR3, name: IRB, aliases: [IRB Re, IRB(Re)]}
+            - {ticker: PSSA3, name: Porto Seguro}
+        - name: Mercado de capitais
+          companies:
+            - {ticker: B3SA3, name: B3}
+            - {ticker: XP, name: XP Inc, aliases: [XP Investimentos]}
+        - name: Pagamentos
+          companies:
+            - {ticker: PAGS, name: PagBank, aliases: [PagSeguro]}
+            - {ticker: STNE, name: Stone, aliases: [StoneCo]}
 
     - name: Agro
       groups:
         - name: São Martinho (SMTO3)
-          terms: [São Martinho]
+          companies:
+            - {ticker: SMTO3, name: São Martinho}
         - name: Cosan (CSAN3)
-          terms: [Cosan, Raízen, Rumo, Moove, Radar terras]
-          match: [Cosan, Raízen, Rumo, Moove, Radar]
-        - name: 3tentos (TTEN3)
-          terms: [3tentos, Três Tentos]
+          companies:
+            - {ticker: CSAN3, name: Cosan}
         - name: SLC Agrícola (SLCE3)
-          terms: [SLC Agrícola]
-          match: [SLC]
+          companies:
+            - {ticker: SLCE3, name: SLC Agrícola, aliases: [SLC]}
+        - name: 3tentos (TTEN3)
+          companies:
+            - {ticker: TTEN3, name: 3tentos, aliases: [Três Tentos]}
         - name: Açúcar e etanol
           terms: [preço do açúcar, etanol, Unica cana, Consecana, safra de cana, CBIO]
           match: [açúcar, etanol, cana, Unica, Consecana, CBIO, ATR]
@@ -439,9 +686,15 @@ news:
 
     - name: Combustíveis
       groups:
-        - name: Distribuidoras
-          terms: [Vibra Energia, Ultrapar, Ipiranga, Raízen combustíveis]
-          match: [Vibra, Ultrapar, Ipiranga, Raízen]
+        - name: Raízen (RAIZ4)
+          companies:
+            - {ticker: RAIZ4, name: Raízen}
+        - name: Vibra (VBBR3)
+          companies:
+            - {ticker: VBBR3, name: Vibra, aliases: [Vibra Energia]}
+        - name: Ultrapar (UGPA3)
+          companies:
+            - {ticker: UGPA3, name: Ultrapar, aliases: [Ipiranga, Ultragaz]}
         - name: Preços e Petrobras
           terms: [preço do diesel, preço da gasolina, Petrobras reajuste, Petrobras combustíveis, importação de diesel]
           match: [diesel, gasolina, Petrobras, combustível, combustíveis]
@@ -451,23 +704,38 @@ news:
 
     - name: Bancos LatAm
       groups:
-        - name: Chile
-          locale: CL
-          terms: [Banco de Chile, Santander Chile, Bci, Itaú Chile, Banco Central de Chile, CMF bancos]
-          match: [Banco de Chile, Santander, Bci, Itaú, Banco Central, CMF]
-        - name: Argentina
-          locale: AR
-          terms: [Grupo Galicia, Banco Galicia, Banco Macro, BBVA Argentina, Supervielle, BCRA]
-          match: [Galicia, Macro, BBVA, Supervielle, BCRA, Banco Central]
-        - name: Colômbia
-          locale: CO
-          terms: [Bancolombia, Grupo Aval, Davivienda, Banco de Bogotá, Banco de la República, Superfinanciera]
-          match: [Bancolombia, Aval, Davivienda, Banco de Bogotá, Banco de la República, Banrep, Superfinanciera]
         - name: México
           locale: MX
-          terms: [Banorte, BanBajío, Banregio, Gentera, Inbursa, BBVA México, Banxico, CNBV]
-          match: [Banorte, Bajío, BanBajío, Banregio, Gentera, Inbursa, BBVA, Banxico, CNBV]
+          companies:
+            - {ticker: GFNORTEO, name: Banorte, aliases: [Grupo Financiero Banorte]}
+            - {ticker: BBAJIOO, name: BanBajío, aliases: [Banco del Bajío]}
+            - {ticker: RA, name: Banregio, aliases: [Regional SAB]}
+            - {ticker: GENTERA, name: Gentera, aliases: [Compartamos]}
+            - {name: Banamex}
+          terms: [Banxico, CNBV]
+        - name: Argentina
+          locale: AR
+          companies:
+            - {ticker: GGAL, name: Grupo Galicia, aliases: [Banco Galicia]}
+            - {ticker: SUPV, name: Supervielle}
+            - {ticker: BMA, name: Banco Macro}
+          terms: [BCRA]
         - name: Peru
           locale: PE
-          terms: [Credicorp, BCP Banco de Crédito, Interbank, Intercorp, BBVA Perú, BCRP]
-          match: [Credicorp, BCP, Banco de Crédito, Interbank, Intercorp, BBVA, BCRP, Banco Central de Reserva]
+          companies:
+            - {ticker: BAP, name: Credicorp, aliases: [BCP, Banco de Crédito del Perú]}
+            - {ticker: IFS, name: Intercorp, aliases: [Interbank, Intercorp Financial Services]}
+          terms: [BCRP]
+        - name: Colômbia
+          locale: CO
+          companies:
+            - {ticker: CIB, name: Grupo Cibest, aliases: [Bancolombia]}
+          terms: [Banco de la República, Superfinanciera]
+        - name: Chile
+          locale: CL
+          companies:
+            - {ticker: BCH, name: Banco de Chile, aliases: [Banchile]}
+            - {ticker: BSAC, name: Santander Chile}
+            - {ticker: BCI, name: Bci}
+          terms: [Banco Central de Chile, CMF bancos]
+          match: [Banco Central, CMF]

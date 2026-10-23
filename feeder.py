@@ -168,7 +168,35 @@ def collect_dou(src):
     return items
 
 
-COLLECTORS = {"rss": collect_rss, "html": collect_html, "dou": collect_dou}
+def collect_doesp(src):
+    """Diário Oficial do Estado de SP: API pública de busca (acervo desde 2023)."""
+    api = "https://do-api-web-search.doe.sp.gov.br/v2/advanced-search/publications"
+    today = datetime.now(BRT).date()
+    start = today - timedelta(days=src.get("days", 2))
+    items, seen_urls = [], set()
+    for term in src["terms"]:
+        params = {"FromDate": start.isoformat(), "ToDate": today.isoformat(),
+                  "PageNumber": 1, "PageSize": 100, "SortField": "Date", "Terms[0]": term}
+        r = requests.get(api, params=params, headers=HEADERS, timeout=40)
+        r.raise_for_status()
+        for it in r.json().get("items", []):
+            slug = it.get("slug") or ""
+            url = slug if slug.startswith("http") else "https://www.doe.sp.gov.br/" + slug.lstrip("/")
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
+            hier = it.get("hierarchy") or ""
+            if isinstance(hier, list):
+                hier = " / ".join(str(h) for h in hier)
+            items.append({"title": clean(it.get("title", ""), 300), "url": url,
+                          "snippet": clean(it.get("excerpt", "")),
+                          "published": it.get("date", ""), "outlet": clean(str(hier), 120)})
+        time.sleep(1)
+    return items
+
+
+COLLECTORS = {"rss": collect_rss, "html": collect_html, "dou": collect_dou,
+              "doesp": collect_doesp}
 
 
 # ----------------------------------------------------------------- classificação
@@ -236,6 +264,22 @@ def strip_outlet(title, outlet):
     return re.sub(r"\s+-\s+[^-]{2,40}$", "", title).strip()
 
 
+def group_spec(grp):
+    """Devolve (termos de busca, [(etiqueta, padrão)]) de um grupo."""
+    search, pats = [], []
+    for c in grp.get("companies", []):
+        label = f"{c['name']} ({c['ticker']})" if c.get("ticker") else c["name"]
+        names = [c["name"]] + list(c.get("aliases", []))
+        search += names
+        for n in names + ([c["ticker"]] if c.get("ticker") else []):
+            pats.append((label, term_pattern(n)))
+    extra = list(grp.get("terms", []))
+    search += extra
+    for m in grp.get("match") or extra:
+        pats.append((m, term_pattern(m)))
+    return search, pats
+
+
 def run_news(cfg, state, now, errors):
     ncfg = cfg.get("news")
     if not ncfg:
@@ -248,9 +292,9 @@ def run_news(cfg, state, now, errors):
     out, fetched, added_ids = [], set(), set()
     for sector in ncfg["sectors"]:
         for grp in sector["groups"]:
-            pats = [(m, term_pattern(m)) for m in grp.get("match") or grp["terms"]]
+            terms, pats = group_spec(grp)
             got = []
-            for url in gnews_urls(grp["terms"], grp.get("locale", "BR")):
+            for url in gnews_urls(terms, grp.get("locale", "BR")):
                 try:
                     got += collect_rss({"url": url})
                 except Exception as exc:
@@ -268,7 +312,7 @@ def run_news(cfg, state, now, errors):
                 if any(p.search(ntitle) for p in ex):
                     continue
                 ftitle = fold_keep_case(title)
-                tags = [m for m, p in pats if p.search(ftitle)]
+                tags = list(dict.fromkeys(m for m, p in pats if p.search(ftitle)))
                 if not tags or added >= cap:
                     continue
                 pub = ""
