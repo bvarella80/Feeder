@@ -1,0 +1,473 @@
+# =====================================================================
+#  FEEDER — configuração (aba Regulatório no início, aba Setores no fim)
+#  Edite à vontade: adicionar agência = copiar um bloco em "sources".
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# TEMAS: o que torna um item relevante. Matching ignora acento e caixa.
+# priority: alta | media  (define a ordem no e-mail)
+# ---------------------------------------------------------------------
+themes:
+  revisao_reajuste:
+    label: "Revisão / reajuste tarifário"
+    priority: alta
+    keywords:
+      - revisão tarifária
+      - revisão tarifária periódica
+      - revisão extraordinária
+      - RTP
+      - reajuste tarifário
+      - reajuste anual
+      - IRT
+      - índice de reajuste
+      - processo tarifário
+      - ciclo tarifário
+      - reposicionamento tarifário
+      - estrutura tarifária
+      - tarifa de uso
+      - TUSD
+      - TUST
+      - receita anual permitida
+      - receita requerida
+      - margem de distribuição
+      - bandeira tarifária
+      - reequilíbrio econômico-financeiro
+      - equilíbrio econômico-financeiro
+
+  metodologia:
+    label: "Metodologia regulatória"
+    priority: alta
+    keywords:
+      - metodologia
+      - PRORET
+      - submódulo
+      - WACC
+      - custo de capital
+      - taxa de remuneração
+      - fator X
+      - base de remuneração
+      - BRR
+      - BAR
+      - custos operacionais regulatórios
+      - perdas regulatórias
+      - perdas não técnicas
+      - componente Pd
+      - empresa de referência
+      - análise de impacto regulatório
+
+  encargos:
+    label: "Encargos e subsídios"
+    priority: alta
+    keywords:
+      - encargo
+      - encargos setoriais
+      - CDE
+      - conta de desenvolvimento energético
+      - ESS
+      - EER
+      - PROINFA
+      - TFSEE
+      - CCC
+      - subsídio
+      - conta-covid
+      - conta escassez hídrica
+      - sobrecontratação
+
+  curtailment:
+    label: "Curtailment / restrições de geração"
+    priority: alta
+    keywords:
+      - curtailment
+      - corte de geração
+      - cortes de geração
+      - constrained-off
+      - constrained off
+      - restrição de operação
+      - restrições de operação
+      - frustração de geração
+      - ressarcimento aos geradores
+      - indisponibilidade externa
+      - confiabilidade elétrica
+
+  atos_normativos:
+    label: "Atos normativos e participação"
+    priority: media
+    keywords:
+      - resolução normativa
+      - resolução homologatória
+      - resolução autorizativa
+      - REN
+      - REH
+      - deliberação
+      - consulta pública
+      - audiência pública
+      - tomada de subsídios
+      - nota técnica
+      - agenda regulatória
+      - reunião pública
+      - portaria
+
+  saneamento_gas:
+    label: "Saneamento e gás (temas setoriais)"
+    priority: media
+    keywords:
+      - marco legal do saneamento
+      - universalização
+      - capacidade econômico-financeira
+      - prestação regionalizada
+      - norma de referência
+      - ANA
+      - tarifa social
+      - gás canalizado
+      - contrato de concessão
+      - aditivo contratual
+      - termo aditivo
+
+  # Coloque aqui as empresas da sua cobertura: qualquer menção já é relevante.
+  empresas:
+    label: "Empresas cobertas"
+    priority: alta
+    keywords:
+      - Sabesp
+      - Copasa
+      - Sanepar
+      - Comgás
+      - Necta
+      - Copel
+      - Cemig
+      - Eletrobras
+      - Energisa
+      - Equatorial
+      - Neoenergia
+      - CPFL
+      - Enel
+      - Light
+      - Taesa
+      - ISA Energia
+      - Alupar
+      - Engie
+      - Auren
+
+# Itens com estes termos são descartados (ruído comum em sites de agências)
+exclude:
+  - concurso público
+  - concurso
+  - estágio
+  - processo seletivo
+  - licitação
+  - pregão
+  - aniversário
+  - campanha de vacinação
+  - semana do servidor
+  - ouvidoria itinerante
+
+# ---------------------------------------------------------------------
+# FONTES
+#   type: dou     -> busca no Diário Oficial da União (onde saem REN/REH da ANEEL)
+#   type: rss     -> qualquer feed RSS/Atom (inclui Google Notícias)
+#   type: html    -> página de notícias/atos: o robô detecta links novos
+#
+#   require_match: true  -> só entra se casar com algum tema
+#                  false -> entra tudo que for novo (exceto 'exclude');
+#                           bom para fontes de baixo volume e alta relevância
+#   selector: (opcional) seletor CSS para limitar a área de links da página
+#   verify_ssl: false  -> use se o site da agência tiver certificado quebrado
+# ---------------------------------------------------------------------
+sources:
+
+  # ---------------- ANEEL ----------------
+  - name: "ANEEL — Diário Oficial da União"
+    agency: ANEEL
+    sector: Energia
+    type: dou
+    query: '"Agência Nacional de Energia Elétrica"'
+    section: do1
+    require_match: true
+
+  - name: "ANEEL — Notícias"
+    agency: ANEEL
+    sector: Energia
+    type: html
+    url: https://www.gov.br/aneel/pt-br/assuntos/noticias
+    require_match: true
+
+  - name: "ANEEL — Na imprensa (Google Notícias)"
+    agency: ANEEL
+    sector: Energia
+    type: rss
+    url: 'https://news.google.com/rss/search?q=ANEEL+(%22revis%C3%A3o+tarif%C3%A1ria%22+OR+reajuste+OR+curtailment+OR+encargo+OR+CDE+OR+metodologia)+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: true
+
+  - name: "Curtailment — Na imprensa (Google Notícias)"
+    agency: ONS/ANEEL
+    sector: Energia
+    type: rss
+    url: 'https://news.google.com/rss/search?q=(curtailment+OR+%22corte+de+gera%C3%A7%C3%A3o%22+OR+%22constrained-off%22)+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: false
+
+  # ---------------- ARSESP (SP: gás e saneamento) ----------------
+  - name: "ARSESP — Site"
+    agency: ARSESP
+    sector: Saneamento/Gás
+    type: html
+    url: https://www.arsesp.sp.gov.br/
+    require_match: false
+
+  - name: "ARSESP — Na imprensa (Google Notícias)"
+    agency: ARSESP
+    sector: Saneamento/Gás
+    type: rss
+    url: 'https://news.google.com/rss/search?q=Arsesp+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: false
+
+  # ---------------- AGEPAR (PR) ----------------
+  - name: "AGEPAR — Notícias"
+    agency: AGEPAR
+    sector: Saneamento/Gás/Rodovias
+    type: html
+    url: https://www.agepar.pr.gov.br/Noticias
+    require_match: false
+
+  - name: "AGEPAR — Na imprensa (Google Notícias)"
+    agency: AGEPAR
+    sector: Saneamento/Gás/Rodovias
+    type: rss
+    url: 'https://news.google.com/rss/search?q=Agepar+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: false
+
+  # ---------------- ARSAE-MG ----------------
+  - name: "ARSAE-MG — Site"
+    agency: ARSAE-MG
+    sector: Saneamento
+    type: html
+    url: https://www.arsae.mg.gov.br/
+    require_match: false
+
+  - name: "ARSAE-MG — Na imprensa (Google Notícias)"
+    agency: ARSAE-MG
+    sector: Saneamento
+    type: rss
+    url: 'https://news.google.com/rss/search?q=Arsae+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+    require_match: false
+
+  # ---------------- MODELOS para outras agências ----------------
+  # Copie, descomente e ajuste a URL da página de notícias/atos:
+  #
+  # - name: "AGERGS — Site"
+  #   agency: AGERGS
+  #   sector: Saneamento/Gás
+  #   type: html
+  #   url: https://agergs.rs.gov.br/
+  #   require_match: false
+  #
+  # - name: "AGERGS — Na imprensa (Google Notícias)"
+  #   agency: AGERGS
+  #   sector: Saneamento/Gás
+  #   type: rss
+  #   url: 'https://news.google.com/rss/search?q=Agergs+when:1d&hl=pt-BR&gl=BR&ceid=BR:pt-419'
+  #   require_match: false
+  #
+  # - name: "ANA — Diário Oficial (normas de referência do saneamento)"
+  #   agency: ANA
+  #   sector: Saneamento
+  #   type: dou
+  #   query: '"Agência Nacional de Águas e Saneamento Básico"'
+  #   section: do1
+  #   require_match: true
+
+# Resumo de cada item por IA (opcional; precisa do secret ANTHROPIC_API_KEY)
+ai_summary:
+  enabled: true
+  model: claude-haiku-5-5
+  max_items: 40
+
+# Envia e-mail mesmo quando não houver nada novo? (útil para saber que rodou)
+send_when_empty: false
+
+# =====================================================================
+#  ABA "SETORES" — notícias por setor de cobertura
+#
+#  Cada setor tem grupos (empresa, tema ou país). Para cada grupo o robô
+#  busca no Google Notícias os termos de "terms" nas últimas 24h.
+#  - match: (opcional) palavras que precisam aparecer no título; por padrão
+#           são os próprios "terms". Útil para temas amplos.
+#  - locale: BR (padrão), CL, AR, CO, MX ou PE (busca em espanhol local)
+#  Tags exibidas em cada notícia = termos encontrados no título.
+#  Termos com inicial maiúscula diferenciam maiúsculas ("Rumo" não casa com
+#  "rumo a"); termos em minúsculas valem de qualquer jeito.
+# =====================================================================
+news:
+  max_per_group: 25        # limite de notícias novas por grupo a cada execução
+
+  # Notícia vira "destaque" (marcador vermelho) se o título tiver um destes termos
+  highlight:
+    - resultado
+    - resultados
+    - lucro
+    - prejuízo
+    - balanço
+    - trimestre
+    - guidance
+    - projeção
+    - dividendos
+    - JCP
+    - juros sobre capital
+    - recompra
+    - aquisição
+    - adquire
+    - fusão
+    - compra de
+    - venda de
+    - incorporação
+    - IPO
+    - follow-on
+    - oferta de ações
+    - debêntures
+    - emissão
+    - rating
+    - rebaixa
+    - eleva nota
+    - preço-alvo
+    - recomendação
+    - CEO
+    - novo presidente
+    - renúncia
+    - recuperação judicial
+    - multa
+    - CADE
+    - investigação
+    - Copom
+    - Selic
+    - reajuste
+    - revisão tarifária
+    - safra
+    - Conab
+    - Unica
+    - Consecana
+    - CBIO
+    - mistura
+    - ICMS
+    - privatização
+    - leilão
+    # espanhol
+    - utilidad
+    - ganancias
+    - pérdidas
+    - adquisición
+    - fusión
+    - calificación
+    - tasa de interés
+    - tasa de referencia
+    - dividendo
+    - director general
+    - regulación
+
+  exclude:
+    - carteira recomendada
+    - ações para investir
+    - melhores ações
+    - ações para comprar
+    - palpite
+    - horóscopo
+    - loteria
+    - mega-sena
+    - concurso
+    - vagas de emprego
+    - futebol
+    - patrocínio
+    - como abrir conta
+    - golpe do pix
+    - fútbol
+
+  sectors:
+    - name: Utilities
+      groups:
+        - name: Energia elétrica
+          terms: [Eletrobras, Axia Energia, Copel, Cemig, Equatorial, Energisa, Neoenergia, CPFL, Engie Brasil, Auren, Taesa, ISA Energia, Alupar, Eneva, Light]
+        - name: Saneamento
+          terms: [Sabesp, Copasa, Sanepar, Aegea, Iguá Saneamento]
+        - name: Gás
+          terms: [Compass Gás, Comgás, Necta Gás, gás natural]
+          match: [Compass, Comgás, Necta, gás natural]
+        - name: Setor e regulação
+          terms: [setor elétrico, leilão de energia, leilão de transmissão, ONS, curtailment, conta de luz]
+
+    - name: Bancos
+      groups:
+        - name: Incumbentes
+          terms: [Itaú Unibanco, Bradesco, Banco do Brasil, Santander Brasil]
+          match: [Itaú, Bradesco, Banco do Brasil, BB, Santander]
+        - name: Médios e investimento
+          terms: [BTG Pactual, Banrisul, ABC Brasil, Banco Pan, Daycoval]
+          match: [BTG, Banrisul, ABC Brasil, Banco Pan, Daycoval]
+        - name: Setor e Banco Central
+          terms: [Banco Central crédito, inadimplência, spread bancário, Copom, Febraban]
+          match: [Banco Central, BC, inadimplência, spread, Copom, Febraban, crédito]
+
+    - name: Non Banks
+      groups:
+        - name: Digitais
+          terms: [Nubank, Banco Inter, Inter&Co, Mercado Pago, PicPay, C6 Bank]
+          match: [Nubank, Nu Holdings, Inter, Mercado Pago, PicPay, C6]
+        - name: Pagamentos
+          terms: [Stone, PagBank, PagSeguro, Cielo, Getnet, maquininhas]
+        - name: Mercado de capitais
+          terms: [B3, XP Inc, XP Investimentos, BTG Pactual Digital]
+          match: [B3, XP]
+        - name: Seguros
+          terms: [BB Seguridade, Caixa Seguridade, Porto Seguro, IRB Re, Susep]
+          match: [BB Seguridade, Caixa Seguridade, Porto Seguro, IRB, Susep]
+
+    - name: Agro
+      groups:
+        - name: São Martinho (SMTO3)
+          terms: [São Martinho]
+        - name: Cosan (CSAN3)
+          terms: [Cosan, Raízen, Rumo, Moove, Radar terras]
+          match: [Cosan, Raízen, Rumo, Moove, Radar]
+        - name: 3tentos (TTEN3)
+          terms: [3tentos, Três Tentos]
+        - name: SLC Agrícola (SLCE3)
+          terms: [SLC Agrícola]
+          match: [SLC]
+        - name: Açúcar e etanol
+          terms: [preço do açúcar, etanol, Unica cana, Consecana, safra de cana, CBIO]
+          match: [açúcar, etanol, cana, Unica, Consecana, CBIO, ATR]
+        - name: Grãos
+          terms: [safra de soja, safra de milho, Conab safra, preço da soja, preço do milho, algodão safra]
+          match: [soja, milho, Conab, algodão, grãos, safra]
+
+    - name: Combustíveis
+      groups:
+        - name: Distribuidoras
+          terms: [Vibra Energia, Ultrapar, Ipiranga, Raízen combustíveis]
+          match: [Vibra, Ultrapar, Ipiranga, Raízen]
+        - name: Preços e Petrobras
+          terms: [preço do diesel, preço da gasolina, Petrobras reajuste, Petrobras combustíveis, importação de diesel]
+          match: [diesel, gasolina, Petrobras, combustível, combustíveis]
+        - name: Regulação e tributos
+          terms: [ANP combustíveis, ICMS combustíveis, devedor contumaz, mistura de etanol, mistura de biodiesel, Combustível do Futuro]
+          match: [ANP, ICMS, contumaz, mistura, biodiesel, Combustível do Futuro, sonegação]
+
+    - name: Bancos LatAm
+      groups:
+        - name: Chile
+          locale: CL
+          terms: [Banco de Chile, Santander Chile, Bci, Itaú Chile, Banco Central de Chile, CMF bancos]
+          match: [Banco de Chile, Santander, Bci, Itaú, Banco Central, CMF]
+        - name: Argentina
+          locale: AR
+          terms: [Grupo Galicia, Banco Galicia, Banco Macro, BBVA Argentina, Supervielle, BCRA]
+          match: [Galicia, Macro, BBVA, Supervielle, BCRA, Banco Central]
+        - name: Colômbia
+          locale: CO
+          terms: [Bancolombia, Grupo Aval, Davivienda, Banco de Bogotá, Banco de la República, Superfinanciera]
+          match: [Bancolombia, Aval, Davivienda, Banco de Bogotá, Banco de la República, Banrep, Superfinanciera]
+        - name: México
+          locale: MX
+          terms: [Banorte, BanBajío, Banregio, Gentera, Inbursa, BBVA México, Banxico, CNBV]
+          match: [Banorte, Bajío, BanBajío, Banregio, Gentera, Inbursa, BBVA, Banxico, CNBV]
+        - name: Peru
+          locale: PE
+          terms: [Credicorp, BCP Banco de Crédito, Interbank, Intercorp, BBVA Perú, BCRP]
+          match: [Credicorp, BCP, Banco de Crédito, Interbank, Intercorp, BBVA, BCRP, Banco Central de Reserva]

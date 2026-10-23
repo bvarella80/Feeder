@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feeder</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,450;6..72,550&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3F6F7;
+  --surface: #FFFFFF;
+  --ink: #17212B;
+  --muted: #5B6B78;
+  --faint: #8A97A3;
+  --line: #D8E0E5;
+  --cable: #1F5E8C;
+  --cable-soft: #E3EDF5;
+  --alta: #C8361D;
+  --media: #B98900;
+  --baixa: #A3AEB8;
+  --cell: #E7ECEF;
+  --serif: "Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --sans: "Instrument Sans", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11181E; --surface: #18222A; --ink: #E4EAEE; --muted: #9AA8B3; --faint: #6C7A86;
+    --line: #2A3640; --cable: #7FB3DB; --cable-soft: #1E3344;
+    --alta: #F06A4F; --media: #E0B23A; --baixa: #55636F; --cell: #222E37;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11181E; --surface: #18222A; --ink: #E4EAEE; --muted: #9AA8B3; --faint: #6C7A86;
+  --line: #2A3640; --cable: #7FB3DB; --cable-soft: #1E3344;
+  --alta: #F06A4F; --media: #E0B23A; --baixa: #55636F; --cell: #222E37;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cable); outline-offset: 2px; border-radius: 3px; }
+
+/* Cabeçalho */
+.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; }
+h1 { font: 550 30px/1.1 var(--serif); margin: 0; letter-spacing: -0.01em; }
+.updated { color: var(--muted); font-size: 13px; }
+.lede { margin: 10px 0 0; color: var(--muted); max-width: 62ch; }
+.lede strong { color: var(--ink); font-weight: 600; }
+
+/* Pulso por agência: o elemento-assinatura */
+.pulse { margin: 28px 0 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 10px; overflow-x: auto; }
+.pulse-head { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.prow {
+  display: grid; grid-template-columns: 112px 1fr 36px; align-items: center; gap: 12px;
+  width: calc(100% + 12px); padding: 5px 6px; margin: 0 -6px; border: 0; background: none;
+  border-radius: 6px; cursor: pointer; text-align: left;
+}
+.prow:hover { background: var(--cable-soft); }
+.prow[aria-pressed="true"] { background: var(--cable-soft); }
+.prow[aria-pressed="true"] .pname { color: var(--cable); }
+.pname { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cells { display: grid; grid-template-columns: repeat(30, 1fr); gap: 3px; height: 22px; align-items: end; }
+.cell { background: var(--cell); border-radius: 2px; height: 4px; }
+.cell.c1 { height: 9px; } .cell.c2 { height: 15px; } .cell.c3 { height: 22px; }
+.cell.alta { background: var(--alta); } .cell.media { background: var(--media); } .cell.baixa { background: var(--baixa); }
+.pcount { text-align: right; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--muted); font-size: 12px; margin-top: 8px; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+
+/* Filtros */
+.filters { position: relative; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding: 14px 0 12px; border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.frow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.search {
+  flex: 1 1 220px; min-width: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); color: var(--ink); font: inherit;
+}
+.search::placeholder { color: var(--faint); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: none; padding: 8px 12px; cursor: pointer; font-size: 13px; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.chip {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px;
+  font-size: 13px; cursor: pointer; color: var(--muted);
+}
+a.chip { text-decoration: none; }
+.chip[aria-pressed="true"] { border-color: var(--cable); color: var(--cable); background: var(--cable-soft); }
+.status { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--cable); cursor: pointer; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Feed */
+.day { margin-top: 30px; }
+.day h2 { font: 550 19px/1.3 var(--serif); margin: 0 0 4px; }
+.day h2 span { font-family: var(--sans); font-weight: 400; font-size: 13px; color: var(--muted); margin-left: 8px; }
+.item { display: grid; grid-template-columns: 3px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.rail { border-radius: 2px; background: var(--baixa); }
+.item.alta .rail, .news.alta .rail { background: var(--alta); }
+.item.media .rail { background: var(--media); }
+.meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 13px; color: var(--muted); }
+.ag { font-weight: 600; color: var(--ink); }
+.new { color: var(--alta); font-weight: 600; }
+.title {
+  display: block; margin: 4px 0 6px; color: var(--ink); text-decoration: none;
+  font: 450 19px/1.35 var(--serif); max-width: 70ch;
+}
+.title:hover { color: var(--cable); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.sum { margin: 0 0 8px; color: var(--muted); max-width: 72ch; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { border: 0; background: var(--cable-soft); color: var(--cable); border-radius: 4px; padding: 2px 8px; font-size: 12px; cursor: pointer; }
+.item.read .title { color: var(--muted); }
+.item.read .rail { opacity: .35; }
+.item.read .sum { display: none; }
+
+.empty { margin-top: 40px; padding: 28px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); }
+.empty strong { display: block; color: var(--ink); font: 550 18px/1.3 var(--serif); margin-bottom: 4px; }
+.errors { margin-top: 40px; font-size: 13px; color: var(--muted); }
+.errors summary { cursor: pointer; color: var(--alta); }
+.errors ul { margin: 8px 0 0; padding-left: 18px; }
+.more { display: block; margin: 24px auto 0; padding: 10px 18px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; cursor: pointer; }
+
+@media (min-width: 721px) { .filters { position: sticky; } }
+@media (max-width: 560px) {
+  .prow { grid-template-columns: 86px 1fr 22px; gap: 8px; }
+  .pname { font-size: 12px; }
+  .cells { gap: 2px; }
+  .pulse-hint { display: none; }
+  .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .chip { flex: none; }
+  .wrap { padding: 22px 14px 48px; }
+  h1 { font-size: 26px; }
+  .title { font-size: 17px; }
+  .item { gap: 12px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .item.flash { animation: flash 1.2s ease-out; }
+  @keyframes flash { from { background: var(--cable-soft); } to { background: transparent; } }
+}
+
+/* Abas */
+.tabs { display: flex; gap: 4px; margin-top: 22px; border-bottom: 1px solid var(--line); }
+.tab {
+  border: 0; background: none; padding: 10px 14px 11px; cursor: pointer; font-size: 15px; font-weight: 500;
+  color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none;
+}
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tab .n { font-weight: 400; color: var(--faint); margin-left: 4px; font-size: 13px; }
+[hidden] { display: none !important; }
+
+/* Pulso de 7 dias: caixas com contagem */
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.wd { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; color: var(--faint); font-size: 11px; text-align: center; margin: 0 0 4px; }
+.box {
+  height: 26px; border-radius: 4px; background: var(--cell); display: grid; place-items: center;
+  font-size: 12px; font-variant-numeric: tabular-nums; color: var(--faint);
+}
+.box.alta { background: color-mix(in srgb, var(--alta) 22%, var(--surface)); color: var(--alta); font-weight: 600; box-shadow: inset 3px 0 0 var(--alta); }
+.box.media { background: color-mix(in srgb, var(--media) 22%, var(--surface)); color: var(--media); font-weight: 600; box-shadow: inset 3px 0 0 var(--media); }
+.box.baixa { color: var(--muted); }
+.pgrid { display: grid; grid-template-columns: 112px 1fr 36px; gap: 12px; }
+
+/* Setores */
+.sectors { display: flex; flex-wrap: wrap; gap: 6px; overflow-x: auto; padding: 16px 0 2px; scrollbar-width: none; }
+.sbtn {
+  flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 12px;
+  cursor: pointer; font-size: 14px; color: var(--muted); text-align: left;
+}
+.sbtn b { display: block; color: var(--ink); font-weight: 600; font-size: 14px; }
+.sbtn small { font-size: 12px; }
+.sbtn[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); }
+.sbtn[aria-pressed="true"] b, .sbtn[aria-pressed="true"] small { color: var(--bg); }
+.sec { margin-top: 34px; }
+.sec-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+.sec-h h2 { font: 550 22px/1.2 var(--serif); margin: 0; }
+.sec-h .linkbtn { white-space: nowrap; }
+.grp { margin-top: 22px; }
+.grp h3 { font-size: 14px; font-weight: 600; margin: 0; padding-bottom: 6px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+.grp h3 span { font-weight: 400; color: var(--muted); }
+.grp-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.news { display: grid; grid-template-columns: 3px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.news .title { font-size: 17px; margin: 2px 0 4px; }
+.news .sum { font-size: 14px; margin: 0 0 4px; }
+.news .meta { font-size: 12px; }
+.ctag { color: var(--cable); }
+.news.read .title { color: var(--muted); }
+.news.read .rail { opacity: .35; }
+.nil { color: var(--faint); font-size: 13px; padding: 10px 0; }
+.ingroup { margin-top: 8px; }
+@media (max-width: 560px) {
+  .pgrid { grid-template-columns: 86px 1fr 22px; gap: 8px; }
+  .box { height: 24px; font-size: 11px; }
+  .news .title { font-size: 16px; }
+  .sectors { flex-wrap: nowrap; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Feeder</h1>
+    <div class="updated" id="updated"></div>
+  </header>
+  <p class="lede" id="notice" hidden></p>
+  <nav class="tabs" role="tablist">
+    <a class="tab" role="tab" href="#regulatorio" id="tab-reg" aria-selected="true">Regulatório<span class="n" id="n-reg"></span></a>
+    <a class="tab" role="tab" href="#setores" id="tab-news" aria-selected="false">Setores<span class="n" id="n-news"></span></a>
+  </nav>
+
+  <!-- ABA REGULATÓRIO -->
+  <section id="view-reg">
+    <p class="lede" id="lede"></p>
+    <section class="pulse" aria-label="Atividade por agência nos últimos 7 dias">
+      <div class="pulse-head"><span>Itens por agência nos últimos 7 dias<span class="pulse-hint">, clique numa agência para filtrar</span></span></div>
+      <div class="pgrid"><span></span><div class="wd" id="wd"></div><span></span></div>
+      <div id="pulse"></div>
+      <div class="legend"><span><i style="background:var(--alta)"></i>Com item de alta relevância</span><span><i style="background:var(--media)"></i>Média</span><span><i style="background:var(--baixa)"></i>Outros</span></div>
+    </section>
+    <div class="filters">
+      <div class="frow">
+        <input class="search" id="q" type="search" placeholder="Buscar por empresa, tema, número da resolução…" aria-label="Buscar no regulatório">
+        <div class="seg" role="group" aria-label="Relevância">
+          <button data-prio="all" aria-pressed="true">Tudo</button>
+          <button data-prio="alta" aria-pressed="false">Alta</button>
+          <button data-prio="media" aria-pressed="false">Alta e média</button>
+        </div>
+        <div class="seg" role="group" aria-label="Leitura"><button id="unreadBtn" aria-pressed="false">Não lidos</button></div>
+      </div>
+      <div class="chips" id="themes"></div>
+      <div class="status"><span id="count"></span><span><button class="linkbtn" id="clear" hidden>Limpar filtros</button> &nbsp; <button class="linkbtn" id="markAll">Marcar visíveis como lidos</button></span></div>
+    </div>
+    <main id="feed"></main>
+    <button class="more" id="more" hidden>Mostrar mais</button>
+  </section>
+
+  <!-- ABA SETORES -->
+  <section id="view-news" hidden>
+    <div class="sectors" id="sectors" role="group" aria-label="Setor"></div>
+    <div class="filters">
+      <div class="frow">
+        <input class="search" id="nq" type="search" placeholder="Buscar empresa, ticker, tema…" aria-label="Buscar nos setores">
+        <div class="seg" role="group" aria-label="Destaques">
+          <button data-nprio="all" aria-pressed="true">Todas</button>
+          <button data-nprio="alta" aria-pressed="false">Só destaques</button>
+        </div>
+        <div class="seg" role="group" aria-label="Leitura"><button id="nUnreadBtn" aria-pressed="false">Não lidas</button></div>
+      </div>
+      <div class="status"><span id="ncount"></span><span><button class="linkbtn" id="nMarkAll">Marcar visíveis como lidas</button></span></div>
+    </div>
+    <main id="nfeed"></main>
+  </section>
+
+  <div id="errors"></div>
+</div>
+
+<script>
+const ALL = /*__FEED_DATA__*/[];
+const META = /*__FEED_META__*/{};
+
+const READ_KEY = "feeder-lidos";
+let read = new Set();
+try { read = new Set(JSON.parse(localStorage.getItem(READ_KEY) || "[]")); } catch (e) {}
+const saveRead = () => { try { localStorage.setItem(READ_KEY, JSON.stringify([...read].slice(-8000))); } catch (e) {} };
+
+const RANK = { alta: 0, media: 1, baixa: 2 };
+const TZ = "America/Sao_Paulo";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fold = s => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const dayKey = d => new Date(d).toLocaleDateString("en-CA", { timeZone: TZ });
+const hhmm = d => new Date(d).toLocaleTimeString("pt-BR", { timeZone: TZ, hour: "2-digit", minute: "2-digit" });
+const END = META.updated ? new Date(META.updated) : new Date();
+const DAYS = [...Array(7)].map((_, i) => { const d = new Date(END); d.setDate(d.getDate() - (6 - i)); return dayKey(d); });
+const words = q => fold(q).trim().split(/\s+/).filter(Boolean);
+
+ALL.forEach(d => {
+  d.k ||= "reg";
+  d.when = d.pub || d.ts;
+  d._day = dayKey(d.when);
+  d._text = fold([d.t, d.s, d.ag, d.se, d.out, (d.th || []).join(" ")].join(" "));
+});
+const REG = ALL.filter(d => d.k === "reg");
+const NEWS = ALL.filter(d => d.k === "news");
+
+function dayLabel(key) {
+  if (key === DAYS[6]) return "Hoje";
+  if (key === DAYS[5]) return "Ontem";
+  const s = new Date(key + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+function shortWhen(d, noTime) {
+  const k = dayKey(d);
+  if (noTime) return k === DAYS[6] ? "hoje" : k === DAYS[5] ? "ontem" : new Date(d).toLocaleDateString("pt-BR", { timeZone: TZ, weekday: "short", day: "2-digit", month: "2-digit" }).replace(".", "");
+  if (k === DAYS[6]) return hhmm(d);
+  if (k === DAYS[5]) return "ontem, " + hhmm(d);
+  return new Date(d).toLocaleDateString("pt-BR", { timeZone: TZ, weekday: "short", day: "2-digit", month: "2-digit" }).replace(".", "") + ", " + hhmm(d);
+}
+
+/* ---------- Abas ---------- */
+function route() {
+  const news = location.hash === "#setores";
+  $("#view-reg").hidden = news; $("#view-news").hidden = !news;
+  $("#tab-reg").setAttribute("aria-selected", !news); $("#tab-news").setAttribute("aria-selected", news);
+}
+window.addEventListener("hashchange", route);
+
+function header() {
+  if (META.notice) { $("#notice").hidden = false; $("#notice").textContent = META.notice; }
+  $("#updated").textContent = META.updated ? "Atualizado em " + END.toLocaleString("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";
+  const newReg = REG.filter(d => d.run === META.run_id && !read.has(d.id)).length;
+  const newNews = NEWS.filter(d => d.run === META.run_id && !read.has(d.id)).length;
+  $("#n-reg").textContent = newReg ? newReg + " novos" : "";
+  $("#n-news").textContent = newNews ? newNews + " novas" : "";
+  const last = REG.filter(d => d.run === META.run_id);
+  const hi = last.filter(d => d.p === "alta").length;
+  const src = META.sources_total ? ` Acompanhando ${META.sources_total} fontes regulatórias.` : "";
+  $("#lede").innerHTML = last.length
+    ? `<strong>${last.length} ${last.length === 1 ? "item novo" : "itens novos"} na última atualização</strong>${hi ? `, ${hi} de alta relevância` : ""}.${src}`
+    : `Nada novo nas agências na última atualização.${src}`;
+}
+
+/* ---------- Regulatório ---------- */
+const rs = { q: "", prio: "all", agency: null, theme: null, unread: false, limit: 120 };
+
+function pulse() {
+  $("#wd").innerHTML = DAYS.map(k => `<span>${new Date(k + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")}<br>${k.slice(8)}</span>`).join("");
+  const by = {};
+  REG.forEach(d => {
+    const a = by[d.ag] ||= { total: 0, days: {} };
+    a.total++;
+    const c = a.days[d._day] ||= { n: 0, p: "baixa" };
+    c.n++; if (RANK[d.p] < RANK[c.p]) c.p = d.p;
+  });
+  const ags = Object.keys(by).sort((a, b) => by[b].total - by[a].total);
+  $("#pulse").innerHTML = ags.length ? ags.map(ag => {
+    const boxes = DAYS.map(k => { const c = by[ag].days[k]; return c ? `<span class="box ${c.p}" title="${c.n} ${c.n === 1 ? "item" : "itens"}">${c.n}</span>` : `<span class="box"></span>`; }).join("");
+    return `<button class="prow" data-ag="${esc(ag)}" aria-pressed="${rs.agency === ag}"><span class="pname">${esc(ag)}</span><span class="week">${boxes}</span><span class="pcount">${by[ag].total}</span></button>`;
+  }).join("") : `<div class="nil">As contagens aparecem conforme os itens forem chegando.</div>`;
+}
+
+function themeChips() {
+  const counts = {};
+  REG.forEach(d => (d.th || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
+  $("#themes").innerHTML = Object.keys(counts).sort((a, b) => counts[b] - counts[a])
+    .map(t => `<button class="chip" data-theme="${esc(t)}" aria-pressed="${rs.theme === t}">${esc(t)} <span style="opacity:.6">${counts[t]}</span></button>`).join("");
+}
+
+function regFiltered() {
+  const q = words(rs.q);
+  return REG.filter(d =>
+    (rs.prio === "all" || (rs.prio === "alta" ? d.p === "alta" : d.p !== "baixa")) &&
+    (!rs.agency || d.ag === rs.agency) && (!rs.theme || (d.th || []).includes(rs.theme)) &&
+    (!rs.unread || !read.has(d.id)) && q.every(w => d._text.includes(w))
+  ).sort((a, b) => b._day.localeCompare(a._day) || RANK[a.p] - RANK[b.p] || b.ts.localeCompare(a.ts));
+}
+
+function regRender() {
+  const list = regFiltered(), shown = list.slice(0, rs.limit);
+  const active = rs.q || rs.prio !== "all" || rs.agency || rs.theme || rs.unread;
+  $("#count").textContent = `${list.length} ${list.length === 1 ? "item" : "itens"}` + (active ? " com esses filtros" : " nos últimos 7 dias");
+  $("#clear").hidden = !active; $("#more").hidden = list.length <= rs.limit;
+  if (!REG.length) { $("#feed").innerHTML = `<div class="empty"><strong>O feeder está acompanhando as agências.</strong>Os itens novos aparecem aqui a partir da próxima atualização, às 8h ou às 17h.</div>`; return; }
+  if (!list.length) { $("#feed").innerHTML = `<div class="empty"><strong>Nenhum item com esses filtros.</strong>Tente outro termo de busca ou <button class="linkbtn" data-clear>limpe os filtros</button>.</div>`; return; }
+  const groups = [];
+  shown.forEach(d => { const g = groups.at(-1); if (g && g.k === d._day) g.items.push(d); else groups.push({ k: d._day, items: [d] }); });
+  $("#feed").innerHTML = groups.map(g => {
+    const hi = g.items.filter(d => d.p === "alta").length;
+    return `<section class="day"><h2>${dayLabel(g.k)}<span>${g.items.length} ${g.items.length === 1 ? "item" : "itens"}${hi ? `, ${hi} de alta relevância` : ""}</span></h2>` +
+      g.items.map(d => {
+        const o = d.out || d.src, showO = o && fold(o) !== fold(d.ag);
+        return `<article class="item ${d.p} ${read.has(d.id) ? "read" : ""}" data-id="${d.id}"><div class="rail"></div><div>
+          <div class="meta"><span class="ag">${esc(d.ag)}</span>${showO ? `<span>${esc(o)}</span>` : ""}${d.nt ? "" : `<span>${hhmm(d.ts)}</span>`}${d.run === META.run_id && !read.has(d.id) ? `<span class="new">novo</span>` : ""}</div>
+          <a class="title" href="${esc(d.u)}" target="_blank" rel="noopener">${esc(d.t)}</a>
+          ${d.s ? `<p class="sum">${esc(d.s)}</p>` : ""}
+          ${(d.th || []).length ? `<div class="tags">${d.th.map(t => `<button class="tag" data-theme="${esc(t)}">${esc(t)}</button>`).join("")}</div>` : ""}
+        </div></article>`;
+      }).join("") + `</section>`;
+  }).join("");
+}
+function regRefresh() { pulse(); themeChips(); regRender(); }
+function syncReg() {
+  document.querySelectorAll("[data-prio]").forEach(b => b.setAttribute("aria-pressed", b.dataset.prio === rs.prio));
+  $("#unreadBtn").setAttribute("aria-pressed", rs.unread);
+}
+
+/* ---------- Setores ---------- */
+const SECTORS = (META.sectors && META.sectors.length) ? META.sectors
+  : [...new Set(NEWS.map(d => d.ag))].map(n => ({ name: n, groups: [...new Set(NEWS.filter(d => d.ag === n).map(d => d.se))] }));
+const ns = { sector: null, q: "", prio: "all", unread: false, open: {} };
+try { ns.sector = localStorage.getItem("feeder-setor") || null; } catch (e) {}
+if (ns.sector && !SECTORS.some(s => s.name === ns.sector)) ns.sector = null;
+
+function newsFiltered() {
+  const q = words(ns.q);
+  return NEWS.filter(d => (ns.prio === "all" || d.p === "alta") && (!ns.unread || !read.has(d.id)) && q.every(w => d._text.includes(w)))
+    .sort((a, b) => b.when.localeCompare(a.when));
+}
+
+function newsRow(d) {
+  const tags = (d.th || []).map(t => `<span class="ctag">${esc(t)}</span>`).join(", ");
+  return `<article class="news ${d.p} ${read.has(d.id) ? "read" : ""}" data-id="${d.id}"><div class="rail"></div><div>
+    <div class="meta">${tags ? `<span>${tags}</span>` : ""}${d.out ? `<span>${esc(d.out)}</span>` : ""}<span>${shortWhen(d.when, d.nt)}</span>${d.run === META.run_id && !read.has(d.id) ? `<span class="new">nova</span>` : ""}</div>
+    <a class="title" href="${esc(d.u)}" target="_blank" rel="noopener">${esc(d.t)}</a>
+    ${d.s ? `<p class="sum">${esc(d.s)}</p>` : ""}
+  </div></article>`;
+}
+
+function sectorBar(list) {
+  const cnt = n => list.filter(d => d.ag === n).length;
+  const hi = n => list.filter(d => d.ag === n && d.p === "alta").length;
+  $("#sectors").innerHTML = `<button class="sbtn" data-sector="" aria-pressed="${!ns.sector}"><b>Visão geral</b><small>${list.length} notícias</small></button>` +
+    SECTORS.map(s => `<button class="sbtn" data-sector="${esc(s.name)}" aria-pressed="${ns.sector === s.name}"><b>${esc(s.name)}</b><small>${cnt(s.name)} ${cnt(s.name) === 1 ? "notícia" : "notícias"}${hi(s.name) ? `, ${hi(s.name)} ${hi(s.name) === 1 ? "destaque" : "destaques"}` : ""}</small></button>`).join("");
+}
+
+function newsRender() {
+  const list = newsFiltered();
+  sectorBar(list);
+  document.querySelectorAll("[data-nprio]").forEach(b => b.setAttribute("aria-pressed", b.dataset.nprio === ns.prio));
+  $("#nUnreadBtn").setAttribute("aria-pressed", ns.unread);
+  const scope = ns.sector ? list.filter(d => d.ag === ns.sector) : list;
+  $("#ncount").textContent = `${scope.length} ${scope.length === 1 ? "notícia" : "notícias"} nos últimos 7 dias` + (ns.q || ns.prio !== "all" || ns.unread ? " com esses filtros" : "");
+  if (!NEWS.length) { $("#nfeed").innerHTML = `<div class="empty"><strong>Ainda não há notícias dos setores.</strong>Elas aparecem aqui depois da próxima atualização.</div>`; return; }
+
+  if (!ns.sector) {
+    // Visão geral: cada setor com as 5 mais recentes, destaques primeiro
+    $("#nfeed").innerHTML = SECTORS.map(s => {
+      const items = list.filter(d => d.ag === s.name);
+      const top = [...items].sort((a, b) => RANK[a.p] - RANK[b.p] || b.when.localeCompare(a.when)).slice(0, 5);
+      return `<section class="sec"><div class="sec-h"><h2>${esc(s.name)}</h2>${items.length > top.length ? `<button class="linkbtn" data-sector="${esc(s.name)}">Ver as ${items.length}</button>` : ""}</div>
+        ${top.length ? top.map(newsRow).join("") : `<div class="nil">Nada nos últimos 7 dias${ns.q ? " para essa busca" : ""}.</div>`}</section>`;
+    }).join("");
+    return;
+  }
+  const sec = SECTORS.find(s => s.name === ns.sector);
+  const groups = sec.groups.map(g => ({ g, items: scope.filter(d => d.se === g) }));
+  const nav = `<div class="grp-nav">${groups.map((x, i) => `<a class="chip" href="#setores" data-jump="grp-${i}">${esc(x.g)} <span style="opacity:.6">${x.items.length}</span></a>`).join("")}</div>`;
+  $("#nfeed").innerHTML = `<section class="sec"><div class="sec-h"><h2>${esc(sec.name)}</h2></div>${nav}` +
+    groups.map((x, i) => {
+      const lim = ns.open[sec.name + x.g] ? x.items.length : 8;
+      return `<div class="grp" id="grp-${i}"><h3>${esc(x.g)}<span>${x.items.length}</span></h3>
+        ${x.items.length ? x.items.slice(0, lim).map(newsRow).join("") : `<div class="nil">Nada nos últimos 7 dias.</div>`}
+        ${x.items.length > lim ? `<button class="linkbtn ingroup" data-open="${esc(sec.name + x.g)}">Mostrar mais ${x.items.length - lim}</button>` : ""}</div>`;
+    }).join("") + `</section>`;
+}
+
+/* ---------- Erros ---------- */
+function errors() {
+  const e = META.errors || [];
+  $("#errors").innerHTML = e.length ? `<details class="errors"><summary>${e.length} ${e.length === 1 ? "fonte não respondeu" : "fontes não responderam"} na última atualização</summary><ul>${e.map(x => `<li>${esc(x)}</li>`).join("")}</ul><p>Se uma fonte falhar sempre, revise a URL ou os termos dela no config.yaml.</p></details>` : "";
+}
+
+/* ---------- Eventos ---------- */
+function clearReg() { Object.assign(rs, { q: "", prio: "all", agency: null, theme: null, unread: false, limit: 120 }); $("#q").value = ""; syncReg(); regRefresh(); }
+document.addEventListener("click", e => {
+  const t = e.target.closest("button, a.title, a[data-jump]");
+  if (!t) return;
+  if (t.dataset.prio) { rs.prio = t.dataset.prio; syncReg(); regRender(); }
+  else if (t.id === "unreadBtn") { rs.unread = !rs.unread; syncReg(); regRender(); }
+  else if (t.dataset.ag !== undefined) { rs.agency = rs.agency === t.dataset.ag ? null : t.dataset.ag; regRefresh(); }
+  else if (t.dataset.theme !== undefined) { rs.theme = rs.theme === t.dataset.theme ? null : t.dataset.theme; regRefresh(); }
+  else if (t.id === "clear" || t.hasAttribute("data-clear")) clearReg();
+  else if (t.id === "more") { rs.limit += 120; regRender(); }
+  else if (t.id === "markAll") { regFiltered().slice(0, rs.limit).forEach(d => read.add(d.id)); saveRead(); regRender(); header(); }
+  else if (t.dataset.sector !== undefined) { ns.sector = t.dataset.sector || null; try { localStorage.setItem("feeder-setor", ns.sector || ""); } catch (x) {} newsRender(); window.scrollTo({ top: $("#view-news").offsetTop - 8 }); }
+  else if (t.dataset.nprio) { ns.prio = t.dataset.nprio; newsRender(); }
+  else if (t.id === "nUnreadBtn") { ns.unread = !ns.unread; newsRender(); }
+  else if (t.id === "nMarkAll") { newsFiltered().filter(d => !ns.sector || d.ag === ns.sector).forEach(d => read.add(d.id)); saveRead(); newsRender(); header(); }
+  else if (t.dataset.open) { ns.open[t.dataset.open] = true; newsRender(); }
+  else if (t.dataset.jump) { e.preventDefault(); document.getElementById(t.dataset.jump)?.scrollIntoView({ block: "start" }); }
+  else if (t.classList.contains("title")) {
+    read.add(t.closest("[data-id]").dataset.id); saveRead();
+    setTimeout(() => { regRender(); newsRender(); header(); }, 300);
+  }
+});
+let t1, t2;
+$("#q").addEventListener("input", e => { clearTimeout(t1); t1 = setTimeout(() => { rs.q = e.target.value; regRender(); }, 150); });
+$("#nq").addEventListener("input", e => { clearTimeout(t2); t2 = setTimeout(() => { ns.q = e.target.value; newsRender(); }, 150); });
+
+route(); header(); regRefresh(); newsRender(); errors();
+</script>
+</body>
+</html>
