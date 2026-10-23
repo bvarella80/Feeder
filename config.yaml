@@ -125,6 +125,62 @@ themes:
       - aditivo contratual
       - termo aditivo
 
+  concessoes:
+    label: "Concessões e indenizações"
+    priority: alta
+    keywords:
+      - vencimento de concessões
+      - vencimento das concessões
+      - concessões vincendas
+      - renovação de concessões
+      - renovação das concessões
+      - renovação da concessão
+      - prorrogação da concessão
+      - prorrogação das concessões
+      - extensão da concessão
+      - relicitação
+      - nova licitação da concessão
+      - caducidade
+      - cassação
+      - intervenção
+      - indenização
+      - indenizações
+      - RBSE
+      - bens reversíveis
+      - ativos não amortizados
+
+  formacao_preco:
+    label: "Formação de preço (PLD e modelos)"
+    priority: alta
+    keywords:
+      - PLD
+      - preço de liquidação
+      - preço spot
+      - formação de preço
+      - preço horário
+      - DECOMP
+      - DESSEM
+      - NEWAVE
+      - CPAMP
+      - modelos computacionais
+      - aversão ao risco
+      - CVaR
+      - volatilidade do PLD
+
+  biometano_carbono:
+    label: "Biometano e carbono"
+    priority: alta
+    keywords:
+      - biometano
+      - CGOB
+      - garantia de origem do biometano
+      - mercado de carbono
+      - SBCE
+      - crédito de carbono
+      - créditos de carbono
+      - ajuste correspondente
+      - Artigo 6
+
   combustiveis:
     label: "Distribuição de combustíveis"
     priority: alta
@@ -136,6 +192,11 @@ themes:
       - mistura obrigatória
       - mistura de biodiesel
       - teor de biodiesel
+      - B15
+      - B16
+      - B17
+      - B18
+      - B20
       - percentual obrigatório
       - etanol anidro
       - metas compulsórias
@@ -173,8 +234,6 @@ themes:
     label: "Mercado e operação do sistema"
     priority: media
     keywords:
-      - PLD
-      - preço de liquidação
       - mercado livre
       - abertura do mercado
       - GSF
@@ -216,6 +275,8 @@ themes:
       - Compass
       - Comgás
       - Orizon
+      - Enel São Paulo
+      - Enel SP
       - Raízen
       - Vibra
       - Ultrapar
@@ -502,65 +563,121 @@ news:
 
   # Notícia vira "destaque" (marcador vermelho) se o título tiver um destes termos
   highlight:
-    - resultado
-    - resultados
-    - lucro
-    - prejuízo
-    - balanço
-    - trimestre
-    - guidance
-    - projeção
-    - dividendos
-    - JCP
-    - juros sobre capital
-    - recompra
+    # Resultados, prévias operacionais, dividendos e troca de C-level NÃO entram:
+    # você já acompanha por fato relevante. Foco no que antecipa preço.
+    # --- M&A e especulação de ativos
     - aquisição
     - adquire
+    - adquirir
     - fusão
-    - compra de
-    - venda de
-    - incorporação
-    - IPO
+    - compra de ativos
+    - venda de ativos
+    - venda de participação
+    - compra de participação
+    - desinvestimento
+    - negocia
+    - negociação
+    - negociações
+    - avalia venda
+    - avalia compra
+    - estuda venda
+    - pode vender
+    - interessada
+    - interessados
+    - proposta
+    - oferta pela
+    - sondagem
+    - M&A
     - follow-on
     - oferta de ações
-    - debêntures
-    - emissão
+    - block trade
+    - IPO
+    # --- risco e regulação
     - rating
     - rebaixa
-    - eleva nota
-    - preço-alvo
-    - recomendação
-    - CEO
-    - novo presidente
-    - renúncia
-    - recuperação judicial
-    - multa
+    - rebaixamento
     - CADE
+    - TCU
+    - STF
+    - liminar
+    - multa
     - investigação
-    - Copom
-    - Selic
-    - reajuste
-    - revisão tarifária
-    - safra
-    - Conab
-    - Unica
-    - Consecana
-    - CBIO
-    - mistura
-    - ICMS
+    - recuperação judicial
     - privatização
     - leilão
-    # espanhol
-    - utilidad
-    - ganancias
-    - pérdidas
+    # --- concessões (elétricas e saneamento)
+    - vencimento de concessões
+    - concessões vincendas
+    - renovação da concessão
+    - renovação das concessões
+    - prorrogação
+    - relicitação
+    - caducidade
+    - cassação
+    - intervenção
+    - indenização
+    - indenizações
+    - RBSE
+    - WACC
+    # --- formação de preço
+    - PLD
+    - preço spot
+    - DECOMP
+    - DESSEM
+    - NEWAVE
+    - CPAMP
+    # --- clima
+    - El Niño
+    - La Niña
+    - ENSO
+    - NOAA
+    # --- açúcar global
+    - cota de exportação
+    - cotas de exportação
+    - cota de importação
+    - export quota
+    - export quotas
+    - import duty
+    - monção
+    - monções
+    - monsoon
+    - quebra de safra
+    - estoques mundiais
+    - déficit global
+    - superávit global
+    - global deficit
+    - global surplus
+    - consumo de açúcar
+    - sugar consumption
+    # --- grãos
+    - WASDE
+    - USDA
+    - Bolsa de Cereales
+    # --- biocombustíveis e biometano
+    - B15
+    - B16
+    - B17
+    - B18
+    - B20
+    - teor de biodiesel
+    - mistura de biodiesel
+    - CNPE
+    - biometano
+    - CGOB
+    - crédito de carbono
+    - créditos de carbono
+    - ajuste correspondente
+    - Artigo 6
+    # --- bancos
+    - endividamento
+    - comprometimento de renda
+    - inadimplência
+    # espanhol (M&A / risco)
     - adquisición
     - fusión
+    - venta de
+    - compra de
     - calificación
-    - tasa de interés
-    - tasa de referencia
-    - dividendo
-    - director general
     - regulación
 
   exclude:
@@ -615,12 +732,23 @@ news:
         - name: Gás
           companies:
             - {ticker: PASS3, name: Compass, aliases: [Comgás, Compass Gás e Energia]}
-        - name: Resíduos
+        - name: Resíduos e biometano (Orizon)
           companies:
             - {ticker: ORVR3, name: Orizon, aliases: [Orizon Valorização]}
+          terms: [biometano, CGOB, mistura de biometano, crédito de carbono aterro, mercado de carbono, ajuste correspondente]
+          match: [biometano, CGOB, aterro, aterros, crédito de carbono, créditos de carbono, mercado de carbono, SBCE, ajuste correspondente, Artigo 6]
+        - name: Concessões e indenizações
+          terms: [renovação de concessões, concessões de distribuição, vencimento de concessões, relicitação, caducidade concessão, Enel São Paulo, indenização transmissoras]
+          match: [concessão, concessões, renovação, prorrogação, relicitação, caducidade, cassação, intervenção, indenização, indenizações, RBSE, Enel]
+        - name: WACC e metodologia
+          terms: [WACC regulatório, revisão tarifária, metodologia ANEEL, distribuidoras de energia]
+          match: [WACC, revisão tarifária, metodologia, distribuidoras, distribuidora, reajuste tarifário]
+        - name: Preço spot (PLD e modelos)
+          terms: [PLD, preço spot energia, DECOMP, DESSEM, NEWAVE, CPAMP]
+          match: [PLD, preço spot, DECOMP, DESSEM, NEWAVE, CPAMP, preço da energia]
         - name: Setor e regulação
-          terms: [setor elétrico, leilão de energia, leilão de transmissão, curtailment, conta de luz, marco do saneamento]
-          match: [setor elétrico, leilão, curtailment, conta de luz, saneamento, ANEEL, ONS]
+          terms: [setor elétrico, leilão de energia, leilão de transmissão, curtailment, marco do saneamento]
+          match: [setor elétrico, leilão, curtailment, saneamento, ANEEL, ONS]
 
     - name: Bancos
       groups:
@@ -642,9 +770,9 @@ news:
             - {ticker: INTR, name: Banco Inter, aliases: [Inter&Co]}
             - {ticker: PICS, name: PicPay}
             - {ticker: AGBK, name: Agibank}
-        - name: Setor e Banco Central
-          terms: [Banco Central crédito, inadimplência, spread bancário, Copom, Febraban]
-          match: [Banco Central, BC, inadimplência, spread, Copom, Febraban, crédito]
+        - name: Endividamento e dados do BC
+          terms: [endividamento das famílias, comprometimento de renda, inadimplência, estatísticas de crédito Banco Central, concessões de crédito, Relatório de Estabilidade Financeira]
+          match: [endividamento, comprometimento de renda, inadimplência, Banco Central, BC, concessões de crédito, estoque de crédito, Estabilidade Financeira]
 
     - name: Non Banks
       groups:
@@ -680,9 +808,23 @@ news:
         - name: Açúcar e etanol
           terms: [preço do açúcar, etanol, Unica cana, Consecana, safra de cana, CBIO]
           match: [açúcar, etanol, cana, Unica, Consecana, CBIO, ATR]
+        - name: Açúcar no mundo (Índia, Tailândia, China)
+          terms: [Índia açúcar, exportação de açúcar Índia, monção Índia cana, Tailândia açúcar, China açúcar importação, consumo mundial de açúcar, déficit global açúcar]
+          match: [Índia, Tailândia, China, monção, monções, consumo de açúcar, consumo mundial, déficit, superávit, estoques mundiais]
+        - name: Açúcar global (fontes em inglês)
+          locale: US
+          terms: [India sugar exports, India sugar production, ISMA sugar, monsoon sugarcane, Thailand sugar, China sugar imports, global sugar deficit, sugar consumption]
+          match: [sugar, sugarcane, monsoon, ISMA]
         - name: Grãos
           terms: [safra de soja, safra de milho, Conab safra, preço da soja, preço do milho, algodão safra]
           match: [soja, milho, Conab, algodão, grãos, safra]
+        - name: Safras EUA e Argentina
+          terms: [safra americana soja, USDA safra, WASDE, safra argentina, Bolsa de Cereales, Bolsa de Comércio de Rosário]
+          match: [USDA, WASDE, EUA, Estados Unidos, americana, Argentina, argentina, Bolsa de Cereales, Rosário, Rosario]
+        - name: Safras EUA e Argentina (fontes em inglês)
+          locale: US
+          terms: [USDA crop progress, WASDE, US corn harvest, US soybean harvest, Argentina soybean planting, Argentina corn crop]
+          match: [USDA, WASDE, crop, harvest, planting, Argentina, soybean, corn]
 
     - name: Combustíveis
       groups:
@@ -698,9 +840,22 @@ news:
         - name: Preços e Petrobras
           terms: [preço do diesel, preço da gasolina, Petrobras reajuste, Petrobras combustíveis, importação de diesel]
           match: [diesel, gasolina, Petrobras, combustível, combustíveis]
+        - name: Mistura de biodiesel (B15, B16…)
+          terms: [mistura de biodiesel, teor de biodiesel, B15 biodiesel, B16 biodiesel, B17 biodiesel, CNPE biodiesel]
+          match: [biodiesel, B15, B16, B17, B18, B20, CNPE]
         - name: Regulação e tributos
-          terms: [ANP combustíveis, ICMS combustíveis, devedor contumaz, mistura de etanol, mistura de biodiesel, Combustível do Futuro]
-          match: [ANP, ICMS, contumaz, mistura, biodiesel, Combustível do Futuro, sonegação]
+          terms: [ANP combustíveis, ICMS combustíveis, devedor contumaz, mistura de etanol, Combustível do Futuro]
+          match: [ANP, ICMS, contumaz, mistura, Combustível do Futuro, sonegação]
+
+    - name: Clima
+      groups:
+        - name: El Niño e La Niña
+          terms: [El Niño, La Niña, NOAA, fenômeno climático previsão]
+          match: [El Niño, La Niña, NOAA, ENSO, fenômeno]
+        - name: ENSO (fontes em inglês)
+          locale: US
+          terms: [NOAA El Niño, La Niña forecast, ENSO outlook, Climate Prediction Center ENSO]
+          match: [El Niño, La Niña, ENSO, NOAA, Climate Prediction Center]
 
     - name: Bancos LatAm
       groups:

@@ -235,6 +235,7 @@ GNEWS_LOCALES = {
     "CO": ("es-419", "CO", "CO:es-419"),
     "MX": ("es-419", "MX", "MX:es-419"),
     "PE": ("es-419", "PE", "PE:es-419"),
+    "US": ("en-US", "US", "US:en"),
 }
 
 
