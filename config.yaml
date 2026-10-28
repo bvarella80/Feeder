@@ -125,6 +125,20 @@ themes:
       - aditivo contratual
       - termo aditivo
 
+  legislacao:
+    label: "Legislação"
+    priority: alta
+    keywords:
+      - projeto de lei
+      - medida provisória
+      - sanciona
+      - sancionada
+      - Câmara aprova
+      - Senado aprova
+      - veto
+      - decreto regulamenta
+      - lei complementar
+
   concessoes:
     label: "Concessões e indenizações"
     priority: alta
@@ -559,126 +573,177 @@ send_when_empty: false
 #  "rumo a"); termos em minúsculas valem de qualquer jeito.
 # =====================================================================
 news:
-  max_per_group: 25        # limite de notícias novas por grupo a cada execução
+  max_per_group: 10        # limite de notícias novas por grupo a cada execução
+  max_highlight_per_group: 2   # no máximo 2 destaques por grupo a cada execução
+  max_highlights_per_run: 5    # e no máximo 5 destaques no total por execução
+
+  # Destaque só vale para notícia destes veículos (ou que cite o ticker no título).
+  # Portais locais e agregadores continuam aparecendo, mas sem marcador vermelho.
+  highlight_outlets: [Valor, Pipeline, Brazil Journal, NeoFeed, InfoMoney, Estadão, Broadcast, Folha de S.Paulo, O Globo, Exame, Bloomberg, Reuters, Money Times, Seu Dinheiro, Poder360, CNN Brasil, Canal Energia, MegaWhat, epbr, Agência iNFRA, Nova Cana, novaCana, Notícias Agrícolas, Globo Rural, Financial Times, Wall Street Journal, S&P Global, Argus, Barchart, El Financiero, El Economista, Expansión, Diario Financiero, La Tercera, Ámbito, La Nación, Infobae, Portafolio, La República, Gestión, El Comercio]
 
   # Notícia vira "destaque" (marcador vermelho) se o título tiver um destes termos
+  # Destaque padrão (grupos de EMPRESA): o que faz preço na ação.
   highlight:
-    # Resultados, prévias operacionais, dividendos e troca de C-level NÃO entram:
-    # você já acompanha por fato relevante. Foco no que antecipa preço.
-    # --- M&A e especulação de ativos
+    # --- compra e venda de ativos ou empresas
     - aquisição
     - adquire
     - adquirir
     - fusão
-    - compra de ativos
+    - incorporação
     - venda de ativos
     - venda de participação
     - compra de participação
     - desinvestimento
-    - negocia
-    - negociação
-    - negociações
     - avalia venda
     - avalia compra
     - estuda venda
     - pode vender
-    - interessada
-    - interessados
-    - proposta
+    - negocia venda
+    - negocia compra
+    - negocia aquisição
+    - proposta de compra
+    - proposta pela
     - oferta pela
-    - sondagem
+    - OPA
     - M&A
+    # --- resultados trimestrais
+    - resultado
+    - resultados
+    - lucro
+    - prejuízo
+    - balanço
+    - receita
+    - Ebitda
+    - margem
+    - 1T26
+    - 2T26
+    - 3T26
+    - 4T26
+    - 1T27
+    - 2T27
+    - 3T27
+    - 4T27
+    - trimestre
+    - guidance
+    - dados operacionais
+    # --- troca de diretoria e conselho
+    - novo CEO
+    - nova CEO
+    - novo CFO
+    - troca de CEO
+    - troca no comando
+    - deixa o comando
+    - assume o comando
+    - substitui
+    - novo presidente
+    - nova presidente
+    - diretor financeiro
+    - diretor-presidente
+    - renuncia
+    - renúncia
+    - deixa o cargo
+    - deixa a presidência
+    - nomeia
+    - assume a presidência
+    - assume como CEO
+    - conselho de administração
+    - sucessão
+    # --- vendas relevantes de acionistas e ofertas
+    - block trade
     - follow-on
     - oferta de ações
-    - block trade
+    - oferta secundária
+    - venda de ações
+    - vende ações
+    - vende participação
+    - reduz participação
+    - zera participação
+    - eleva participação
+    - aumenta participação
+    - fatia
+    - controlador
+    - acionista
     - IPO
-    # --- risco e regulação
-    - rating
-    - rebaixa
-    - rebaixamento
-    - CADE
-    - TCU
-    - STF
-    - liminar
-    - multa
-    - investigação
-    - recuperação judicial
-    - privatização
-    - leilão
-    # --- concessões (elétricas e saneamento)
-    - vencimento de concessões
-    - concessões vincendas
-    - renovação da concessão
-    - renovação das concessões
-    - prorrogação
-    - relicitação
+    # --- legislação
+    - projeto de lei
+    - medida provisória
+    - Câmara aprova
+    - Senado aprova
+    - sanciona
+    - sancionada
+    - veta
+    - veto
+    - decreto
+    - reforma tributária
+    # --- regulação
+    - ANEEL aprova
+    - ANEEL decide
+    - ANP aprova
+    - Arsesp aprova
+    - CMN
+    - CVM
+    - resolução
+    - consulta pública
+    - revisão tarifária
+    - reajuste tarifário
+    - WACC
     - caducidade
     - cassação
-    - intervenção
+    - intervenção na
+    - renovação da concessão
+    - prorrogação da concessão
+    - relicitação
     - indenização
-    - indenizações
     - RBSE
-    - WACC
-    # --- formação de preço
-    - PLD
-    - preço spot
-    - DECOMP
-    - DESSEM
-    - NEWAVE
-    - CPAMP
-    # --- clima
-    - El Niño
-    - La Niña
-    - ENSO
-    - NOAA
-    # --- açúcar global
-    - cota de exportação
-    - cotas de exportação
-    - cota de importação
-    - export quota
-    - export quotas
-    - import duty
-    - monção
-    - monções
-    - monsoon
-    - quebra de safra
-    - estoques mundiais
-    - déficit global
-    - superávit global
-    - global deficit
-    - global surplus
-    - consumo de açúcar
-    - sugar consumption
-    # --- grãos
-    - WASDE
-    - USDA
-    - Bolsa de Cereales
-    # --- biocombustíveis e biometano
-    - B15
-    - B16
-    - B17
-    - B18
-    - B20
-    - teor de biodiesel
-    - mistura de biodiesel
-    - CNPE
-    - biometano
-    - CGOB
-    - crédito de carbono
-    - créditos de carbono
-    - ajuste correspondente
-    - Artigo 6
-    # --- bancos
-    - endividamento
-    - comprometimento de renda
-    - inadimplência
-    # espanhol (M&A / risco)
+    # --- crédito e risco
+    - rating
+    - rebaixa nota
+    - rebaixamento
+    - eleva nota
+    - CADE
+    - recuperação judicial
+    # --- dividendos e recompra
+    - dividendos
+    - JCP
+    - recompra
+    # espanhol
     - adquisición
     - fusión
-    - venta de
-    - compra de
+    - oferta pública
     - calificación
-    - regulación
+    - utilidad
+    - utilidades
+    - ganancias
+    - resultados trimestrales
+    - director general
+    - renuncia
+
+  # Nunca vira destaque, mesmo com as palavras acima (prévias e conteúdo de opinião)
+  highlight_exclude:
+    - diz CEO
+    - diz o CEO
+    - afirma CEO
+    - segundo o CEO
+    - diz presidente
+    - diz o presidente
+    - Cotação e Indicadores
+    - agenda de dividendos
+    - recomenda compra
+    - recomenda venda
+    - qual ação
+    - ou SLC
+    - o que esperar
+    - prévia
+    - agenda de resultados
+    - calendário de resultados
+    - vale a pena
+    - hora de comprar
+    - Cotação e Indicadores
+    - para investir
+    - recomendadas
+    - entenda
+    - como funciona
+    - veja quanto
 
   exclude:
     - carteira recomendada
@@ -696,6 +761,34 @@ news:
     - como abrir conta
     - golpe do pix
     - fútbol
+    - mutirão
+    - Defensoria Pública
+    - Procon
+    - Black Friday
+    - condomínio
+    - aluguel
+    - dengue
+    - Defesa Civil
+    - horário de negociação
+    - circuit breaker
+    - ações para dezembro
+    - ações para novembro
+    - hora de comprar
+    - orienta
+    - orientações
+    - alerta para riscos
+    - dicas
+    - cuidados com
+    - feirão
+    - reforça operação
+    - reforçam equipes
+    - atualizar dados
+    - manutenção programada
+    - desligamento programado
+    - tarifa social
+    - eficiência energética
+    - doação
+    - vagas
 
   sectors:
     # Formato por empresa:  - {ticker: SBSP3, name: Sabesp, aliases: [...]}
@@ -715,13 +808,13 @@ news:
             - {ticker: CMIG4, name: Cemig}
             - {ticker: CPFE3, name: CPFL, aliases: [CPFL Energia]}
             - {ticker: CPLE3, name: Copel}
-            - {ticker: EQTL3, name: Equatorial}
+            - {ticker: EQTL3, name: Equatorial, search: [Equatorial Energia, Equatorial EQTL3, Equatorial distribuidora], exclude: [Guiné Equatorial, Guinea Ecuatorial, Equatorial Guinea, linha do Equador]}
             - {ticker: ENGI11, name: Energisa}
-            - {ticker: LIGT3, name: Light}
+            - {ticker: LIGT3, name: Light, search: [Light energia Rio, Light distribuidora, Light recuperação judicial, LIGT3], require_any: [energia, distribuidora, concessão, concessionária, Rio, recuperação judicial, credores, ações, ANEEL, dívida, bonds, R$, bilhões], exclude: [Dying Light, Stock Light, jogo, jogos, game, earthquake, magnitude, eleições, segundo turno, reforça operação, reforçam equipes]}
         - name: Geração
           companies:
             - {ticker: AXIA3, name: Axia Energia, aliases: [Eletrobras]}
-            - {ticker: AURE3, name: Auren, aliases: [Auren Energia]}
+            - {ticker: AURE3, name: Auren, aliases: [Auren Energia], search: [Auren Energia, Auren AURE3], exclude: [Auren Sun, canção, música]}
             - {ticker: EGIE3, name: Engie Brasil, aliases: [Engie]}
             - {ticker: ENEV3, name: Eneva}
         - name: Saneamento
@@ -731,36 +824,42 @@ news:
             - {ticker: CSMG3, name: Copasa}
         - name: Gás
           companies:
-            - {ticker: PASS3, name: Compass, aliases: [Comgás, Compass Gás e Energia]}
+            - {ticker: PASS3, name: Compass, aliases: [Comgás, Compass Gás e Energia], search: [Compass Gás e Energia, Compass Cosan gás, Comgás, PASS3], require_any: [gás, Comgás, Cosan, Edge, biometano, distribuidora, ações, IPO, lucro, resultado, ARSESP, concessão, terminal, GNL, Necta, Sulgás, Commit], exclude: [Jeep, carro, carros, SUV, híbrido, Fipe, Therapeutics, Renault, montadora]}
         - name: Resíduos e biometano (Orizon)
           companies:
             - {ticker: ORVR3, name: Orizon, aliases: [Orizon Valorização]}
           terms: [biometano, CGOB, mistura de biometano, crédito de carbono aterro, mercado de carbono, ajuste correspondente]
           match: [biometano, CGOB, aterro, aterros, crédito de carbono, créditos de carbono, mercado de carbono, SBCE, ajuste correspondente, Artigo 6]
+          highlight: [Orizon, ORVR3, CGOB, mandato de biometano, meta de biometano, metas de biometano, mistura de biometano, mistura obrigatória, CNPE, ANP, Combustível do Futuro, ajuste correspondente, Artigo 6, SBCE, créditos de carbono de aterros, crédito de carbono de aterro]
+          exclude: [Portugal, euros, Alentejo, Torres Novas, câmara municipal, prefeitura]
         - name: Concessões e indenizações
           terms: [renovação de concessões, concessões de distribuição, vencimento de concessões, relicitação, caducidade concessão, Enel São Paulo, indenização transmissoras]
           match: [concessão, concessões, renovação, prorrogação, relicitação, caducidade, cassação, intervenção, indenização, indenizações, RBSE, Enel]
+          highlight: [caducidade, cassação, intervenção, relicitação, renovação das concessões, renovação da concessão, prorrogação, concessões vincendas, vencimento, indenização, indenizações, RBSE, decreto, MME, ANEEL, TCU]
         - name: WACC e metodologia
           terms: [WACC regulatório, revisão tarifária, metodologia ANEEL, distribuidoras de energia]
           match: [WACC, revisão tarifária, metodologia, distribuidoras, distribuidora, reajuste tarifário]
+          highlight: [WACC, metodologia, consulta pública, nota técnica, PRORET, base de remuneração, fator X]
         - name: Preço spot (PLD e modelos)
           terms: [PLD, preço spot energia, DECOMP, DESSEM, NEWAVE, CPAMP]
           match: [PLD, preço spot, DECOMP, DESSEM, NEWAVE, CPAMP, preço da energia]
+          highlight: [DECOMP, DESSEM, NEWAVE, CPAMP, metodologia, aversão ao risco, CVaR, piso, teto, preço horário, consulta pública]
         - name: Setor e regulação
           terms: [setor elétrico, leilão de energia, leilão de transmissão, curtailment, marco do saneamento]
           match: [setor elétrico, leilão, curtailment, saneamento, ANEEL, ONS]
+          highlight: [curtailment, corte de geração, leilão de transmissão, leilão de reserva de capacidade, LRCAP, MP do setor elétrico, reforma do setor elétrico, abertura do mercado]
 
     - name: Bancos
       groups:
         - name: Grandes bancos
           companies:
-            - {ticker: ITUB4, name: Itaú, aliases: [Itaú Unibanco]}
-            - {ticker: BBDC4, name: Bradesco}
-            - {ticker: BBAS3, name: Banco do Brasil}
-            - {ticker: SANB11, name: Santander Brasil, aliases: [Santander]}
+            - {ticker: ITUB4, name: Itaú, aliases: [Itaú Unibanco], exclude: [Itaú BBA, diz Itaú, Itaú vê, Itaú projeta, Itaú prevê, Itaú estima, Itaú recomenda, Itaú revela, Itaú eleva, Itaú rebaixa, Itaú corta, Itaú avalia, segundo o Itaú, segundo a Itaú, aponta Itaú, para o Itaú, para a Itaú, analistas do Itaú, analistas da Itaú]}
+            - {ticker: BBDC4, name: Bradesco, exclude: [Bradesco BBI, diz Bradesco, Bradesco vê, Bradesco projeta, Bradesco prevê, Bradesco estima, Bradesco recomenda, Bradesco revela, Bradesco eleva, Bradesco rebaixa, Bradesco corta, Bradesco avalia, segundo o Bradesco, segundo a Bradesco, aponta Bradesco, para o Bradesco, para a Bradesco, analistas do Bradesco, analistas da Bradesco]}
+            - {ticker: BBAS3, name: Banco do Brasil, exclude: [BB Investimentos, diz BB, BB vê, BB recomenda]}
+            - {ticker: SANB11, name: Santander Brasil, aliases: [Santander], exclude: [diz Santander, Santander vê, Santander projeta, Santander prevê, Santander estima, Santander recomenda, Santander revela, Santander eleva, Santander rebaixa, Santander corta, Santander avalia, segundo o Santander, segundo a Santander, aponta Santander, para o Santander, para a Santander, analistas do Santander, analistas da Santander]}
         - name: Médios e investimento
           companies:
-            - {ticker: BPAC11, name: BTG Pactual, aliases: [BTG]}
+            - {ticker: BPAC11, name: BTG Pactual, aliases: [BTG], exclude: [diz BTG, BTG vê, BTG projeta, BTG prevê, BTG estima, BTG recomenda, BTG revela, BTG eleva, BTG rebaixa, BTG corta, BTG avalia, segundo o BTG, segundo a BTG, aponta BTG, para o BTG, para a BTG, analistas do BTG, analistas da BTG, diz BTG Pactual, BTG Pactual vê, BTG Pactual projeta, BTG Pactual prevê, BTG Pactual estima, BTG Pactual recomenda, BTG Pactual revela, BTG Pactual eleva, BTG Pactual rebaixa, BTG Pactual corta, BTG Pactual avalia, segundo o BTG Pactual, segundo a BTG Pactual, aponta BTG Pactual, para o BTG Pactual, para a BTG Pactual, analistas do BTG Pactual, analistas da BTG Pactual]}
             - {ticker: ABCB4, name: ABC Brasil, aliases: [Banco ABC]}
             - {ticker: BRSR6, name: Banrisul}
             - {ticker: PINE4, name: Banco Pine}
@@ -773,6 +872,8 @@ news:
         - name: Endividamento e dados do BC
           terms: [endividamento das famílias, comprometimento de renda, inadimplência, estatísticas de crédito Banco Central, concessões de crédito, Relatório de Estabilidade Financeira]
           match: [endividamento, comprometimento de renda, inadimplência, Banco Central, BC, concessões de crédito, estoque de crédito, Estabilidade Financeira]
+          highlight: [Banco Central, BC, Relatório de Estabilidade Financeira, estatísticas monetárias, nota de crédito, comprometimento de renda das famílias, endividamento das famílias, maior nível, recorde]
+          exclude: [em Goiás, no Paraná, em Minas, na Bahia, no Rio Grande do Sul, em Pernambuco, no Ceará, Serasa Limpa Nome, feirão]
 
     - name: Non Banks
       groups:
@@ -781,15 +882,15 @@ news:
             - {ticker: BBSE3, name: BB Seguridade}
             - {ticker: CXSE3, name: Caixa Seguridade}
             - {ticker: IRBR3, name: IRB, aliases: [IRB Re, IRB(Re)]}
-            - {ticker: PSSA3, name: Porto Seguro}
+            - {ticker: PSSA3, name: Porto Seguro, search: [Porto Seguro seguradora, Porto Seguro PSSA3, Porto Bank, Porto Saúde], require_any: [seguradora, seguros, Porto Bank, Porto Saúde, sinistralidade, sinistros, Susep, ações, lucro, resultado, balanço, dividendos, JCP, B3, Ibovespa, preço-alvo, recomendação, acionistas, aquisição, rating], exclude: [Bahia, BA, Trancoso, Arraial, praia, turismo, polícia, policial, prefeitura, município, moradores, voos, hospedagem, pacotes, Outubro Rosa, Undime, zona eleitoral, votação, Colégio, Visconde, escola]}
         - name: Mercado de capitais
           companies:
-            - {ticker: B3SA3, name: B3}
-            - {ticker: XP, name: XP Inc, aliases: [XP Investimentos]}
+            - {ticker: B3SA3, name: B3, search: [B3 bolsa lucro, ações da B3, B3SA3, B3 tarifas], require_any: [B3SA3, ações da B3, lucro da B3, receita da B3, tarifas, taxas, ADTV, volume médio, concorrente, nova bolsa, CVM, aquisição, dividendos, recompra, preço-alvo, recomenda], exclude: [Ibovespa, AMER3, PETR4, dólar, Chicago, ações mais negociadas, perfis de investidores, fecha, abre, hoje]}
+            - {ticker: XP, name: XP Inc, aliases: [XP Investimentos], exclude: [diz XP, XP vê, XP projeta, XP prevê, XP estima, XP recomenda, XP revela, XP eleva, XP rebaixa, XP corta, XP avalia, segundo o XP, segundo a XP, aponta XP, para o XP, para a XP, analistas do XP, analistas da XP, diz XP Investimentos, XP Investimentos vê, XP Investimentos projeta, XP Investimentos prevê, XP Investimentos estima, XP Investimentos recomenda, XP Investimentos revela, XP Investimentos eleva, XP Investimentos rebaixa, XP Investimentos corta, XP Investimentos avalia, segundo o XP Investimentos, segundo a XP Investimentos, aponta XP Investimentos, para o XP Investimentos, para a XP Investimentos, analistas do XP Investimentos, analistas da XP Investimentos]}
         - name: Pagamentos
           companies:
             - {ticker: PAGS, name: PagBank, aliases: [PagSeguro]}
-            - {ticker: STNE, name: Stone, aliases: [StoneCo]}
+            - {ticker: STNE, name: Stone, aliases: [StoneCo], search: [StoneCo, Stone pagamentos, Stone maquininha, STNE Nasdaq], require_any: [pagamentos, maquininha, adquirência, fintech, Nasdaq, ações, lucro, receita, resultado, TPV, crédito, Linx, PagBank, Cielo, conta, banco, Ton, recompra, aquisição, venda], exclude: [Emma Stone, Stone Age, Stone Man, Dr. Stone, Roblox, Sharon Stone, Oliver Stone, Rolling Stone]}
 
     - name: Agro
       groups:
@@ -811,20 +912,26 @@ news:
         - name: Açúcar no mundo (Índia, Tailândia, China)
           terms: [Índia açúcar, exportação de açúcar Índia, monção Índia cana, Tailândia açúcar, China açúcar importação, consumo mundial de açúcar, déficit global açúcar]
           match: [Índia, Tailândia, China, monção, monções, consumo de açúcar, consumo mundial, déficit, superávit, estoques mundiais]
+          highlight: [cota de exportação, cotas de exportação, exportações de açúcar, importação de açúcar, monção, monções, quebra, déficit, superávit, estoques mundiais, consumo mundial, etanol na Índia, desvio para etanol]
         - name: Açúcar global (fontes em inglês)
           locale: US
           terms: [India sugar exports, India sugar production, ISMA sugar, monsoon sugarcane, Thailand sugar, China sugar imports, global sugar deficit, sugar consumption]
           match: [sugar, sugarcane, monsoon, ISMA]
+          highlight: [export quota, export quotas, exports, import duty, ban, monsoon, deficit, surplus, output cut, lowers estimate, raises estimate, ethanol diversion, ISO]
         - name: Grãos
           terms: [safra de soja, safra de milho, Conab safra, preço da soja, preço do milho, algodão safra]
           match: [soja, milho, Conab, algodão, grãos, safra]
+          highlight: [Conab, quebra de safra, revisa estimativa, reduz estimativa, corta estimativa, eleva estimativa, El Niño]
+          exclude: [Alegrete, prefeitura, dia de campo, feira agropecuária]
         - name: Safras EUA e Argentina
           terms: [safra americana soja, USDA safra, WASDE, safra argentina, Bolsa de Cereales, Bolsa de Comércio de Rosário]
           match: [USDA, WASDE, EUA, Estados Unidos, americana, Argentina, argentina, Bolsa de Cereales, Rosário, Rosario]
+          highlight: [USDA, WASDE, quebra, revisa, reduz estimativa, eleva estimativa, seca]
         - name: Safras EUA e Argentina (fontes em inglês)
           locale: US
           terms: [USDA crop progress, WASDE, US corn harvest, US soybean harvest, Argentina soybean planting, Argentina corn crop]
           match: [USDA, WASDE, crop, harvest, planting, Argentina, soybean, corn]
+          highlight: [WASDE, USDA cuts, USDA raises, lowers, raises, drought, crop progress]
 
     - name: Combustíveis
       groups:
@@ -833,29 +940,35 @@ news:
             - {ticker: RAIZ4, name: Raízen}
         - name: Vibra (VBBR3)
           companies:
-            - {ticker: VBBR3, name: Vibra, aliases: [Vibra Energia]}
+            - {ticker: VBBR3, name: Vibra, aliases: [Vibra Energia], search: [Vibra Energia, Vibra VBBR3, Vibra combustíveis], require_any: [Vibra Energia, combustíveis, combustível, diesel, gasolina, etanol, postos, distribuidora, Petrobras, BR, Comerc, ações, lucro, resultado, market share, participação de mercado, aquisição, venda, Ipiranga, Raízen], exclude: [Vibra Rock, Avenida Paulista, torcida, Vibra Soluções, festival]}
         - name: Ultrapar (UGPA3)
           companies:
             - {ticker: UGPA3, name: Ultrapar, aliases: [Ipiranga, Ultragaz]}
         - name: Preços e Petrobras
           terms: [preço do diesel, preço da gasolina, Petrobras reajuste, Petrobras combustíveis, importação de diesel]
           match: [diesel, gasolina, Petrobras, combustível, combustíveis]
+          highlight: [Petrobras reajusta, Petrobras reduz, Petrobras aumenta, Petrobras eleva, defasagem, paridade de importação, subvenção, subsídio]
         - name: Mistura de biodiesel (B15, B16…)
           terms: [mistura de biodiesel, teor de biodiesel, B15 biodiesel, B16 biodiesel, B17 biodiesel, CNPE biodiesel]
           match: [biodiesel, B15, B16, B17, B18, B20, CNPE]
+          highlight: [B15, B16, B17, B18, B20, CNPE, teor, adia, antecipa, MME]
         - name: Regulação e tributos
           terms: [ANP combustíveis, ICMS combustíveis, devedor contumaz, mistura de etanol, Combustível do Futuro]
           match: [ANP, ICMS, contumaz, mistura, Combustível do Futuro, sonegação]
+          highlight: [devedor contumaz, ICMS, Combustível do Futuro, mistura de etanol, E30, E35, sonegação, operação contra]
 
     - name: Clima
       groups:
         - name: El Niño e La Niña
           terms: [El Niño, La Niña, NOAA, fenômeno climático previsão]
-          match: [El Niño, La Niña, NOAA, ENSO, fenômeno]
+          match: [El Niño, La Niña, ENSO]
+          highlight: [NOAA, probabilidade, chance de, atualiza, reduz, eleva, enfraquece, perde força, ganha força, fim do El Niño, transição, neutralidade]
+          exclude: [dengue, saúde, Defesa Civil, rodovias, queimadas, fumaça, campanha, escola, cientistas, fundo do mar, população, governo do estado, governo de]
         - name: ENSO (fontes em inglês)
           locale: US
           terms: [NOAA El Niño, La Niña forecast, ENSO outlook, Climate Prediction Center ENSO]
-          match: [El Niño, La Niña, ENSO, NOAA, Climate Prediction Center]
+          match: [El Niño, La Niña, ENSO]
+          highlight: [NOAA, Climate Prediction Center, CPC, Bureau of Meteorology, probability, chance, odds, outlook, update, weakening, strengthening, transition]
 
     - name: Bancos LatAm
       groups:
@@ -891,6 +1004,6 @@ news:
           companies:
             - {ticker: BCH, name: Banco de Chile, aliases: [Banchile]}
             - {ticker: BSAC, name: Santander Chile}
-            - {ticker: BCI, name: Bci}
+            - {ticker: BCI, name: Bci, aliases: [Banco de Crédito e Inversiones], search: [Banco Bci, Bci Chile, Banco de Crédito e Inversiones], require_any: [banco, Chile, utilidad, utilidades, resultados, capital, City National, adquisición, colocaciones, CMF], exclude: [Asset Man, Fondo De Inv, Estimates, Banque Marocaine, BCI Burke, Balance de situación, Ratio precio]}
           terms: [Banco Central de Chile, CMF bancos]
           match: [Banco Central, CMF]

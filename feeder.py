@@ -265,20 +265,94 @@ def strip_outlet(title, outlet):
     return re.sub(r"\s+-\s+[^-]{2,40}$", "", title).strip()
 
 
+
+STOP = set("a o os as de da do das dos e em no na nos nas para por com que um uma ao aos se diz "
+           "the of in to and for on el la los las del en y por con".split())
+
+
+def title_tokens(title):
+    return {w for w in re.findall(r"[a-z0-9]+", norm(title)) if len(w) > 2 and w not in STOP}
+
+
+def is_near_dup(toks, others, thr=0.5):
+    """Mesma história contada por outro veículo (sobreposição de palavras do título)."""
+    if len(toks) < 3:
+        return False
+    for o in others:
+        inter = len(toks & o)
+        if inter and inter / min(len(toks), len(o)) >= 0.7 or inter / max(len(toks | o), 1) >= thr:
+            return True
+    return False
+
+
+def recent_news_tokens(now, days=3):
+    if not FEED_FILE.exists():
+        return []
+    cutoff = (now - timedelta(days=days)).isoformat()
+    feed = json.loads(FEED_FILE.read_text(encoding="utf-8"))
+    return [title_tokens(f["t"]) for f in feed if f.get("k") == "news" and f["ts"] >= cutoff]
+
+
+def _pat_list(words):
+    return [re.compile(r"(?<![a-z0-9])" + re.escape(norm(w)) + r"(?![a-z0-9])") for w in words]
+
+
 def group_spec(grp):
-    """Devolve (termos de busca, [(etiqueta, padrão)]) de um grupo."""
-    search, pats = [], []
+    """Devolve (termos de busca, regras). Cada regra: (etiqueta, padrões do nome,
+    padrão do ticker, contexto exigido, exclusões)."""
+    search, rules = [], []
     for c in grp.get("companies", []):
         label = f"{c['name']} ({c['ticker']})" if c.get("ticker") else c["name"]
         names = [c["name"]] + list(c.get("aliases", []))
-        search += names
-        for n in names + ([c["ticker"]] if c.get("ticker") else []):
-            pats.append((label, term_pattern(n)))
+        search += c.get("search") or names
+        rules.append((label, [term_pattern(n) for n in names],
+                      term_pattern(c["ticker"]) if c.get("ticker") and len(c["ticker"]) > 3 else None,
+                      _pat_list(c.get("require_any", [])), _pat_list(c.get("exclude", []))))
     extra = list(grp.get("terms", []))
     search += extra
     for m in grp.get("match") or extra:
-        pats.append((m, term_pattern(m)))
-    return search, pats
+        rules.append((m, [term_pattern(m)], None, [], []))
+    return search, rules
+
+
+def match_tags(title, rules):
+    ftitle, ntitle = fold_keep_case(title), norm(title)
+    tags = []
+    for label, name_pats, tick_pat, need, excl in rules:
+        if excl and any(p.search(ntitle) for p in excl):
+            continue
+        if tick_pat and tick_pat.search(ftitle):
+            tags.append(label)
+        elif any(p.search(ftitle) for p in name_pats) and (not need or any(p.search(ntitle) for p in need)):
+            tags.append(label)
+    return list(dict.fromkeys(tags))
+
+
+TICKER_IN_TITLE = re.compile(r"\b[A-Z]{4}(3|4|5|6|11)\b")
+
+
+def rank_highlights(items, ncfg):
+    """Só fica destaque o que vem de veículo relevante (ou cita ticker) e, no total,
+    no máximo N por execução, priorizando empresas cobertas e grandes veículos."""
+    outlets = [norm(o) for o in ncfg.get("highlight_outlets", [])]
+    limit = ncfg.get("max_highlights_per_run", 5)
+    def major(it):
+        o = norm(it.get("outlet", ""))
+        return bool(o) and any(x in o for x in outlets)
+    cands = []
+    for it in items:
+        if it["priority"] != "alta":
+            continue
+        is_company = any("(" in t for t in it["themes"])
+        has_ticker = bool(TICKER_IN_TITLE.search(it["title"]))
+        if not (major(it) or has_ticker):
+            it["priority"] = "baixa"
+            continue
+        cands.append((2 * major(it) + 2 * is_company + has_ticker, it))
+    cands.sort(key=lambda x: -x[0])
+    for i, (_, it) in enumerate(cands):
+        if i >= limit:
+            it["priority"] = "baixa"
 
 
 def run_news(cfg, state, now, errors):
@@ -289,11 +363,18 @@ def run_news(cfg, state, now, errors):
           for k in ncfg.get("highlight", [])]
     ex = [re.compile(r"(?<![a-z0-9])" + re.escape(norm(k)) + r"(?![a-z0-9])")
           for k in ncfg.get("exclude", [])]
-    cap = ncfg.get("max_per_group", 25)
+    hx = _pat_list(ncfg.get("highlight_exclude", []))
+    cap = ncfg.get("max_per_group", 10)
+    hcap = ncfg.get("max_highlight_per_group", 3)
     out, fetched, added_ids = [], set(), set()
+    recent = recent_news_tokens(now)
     for sector in ncfg["sectors"]:
         for grp in sector["groups"]:
-            terms, pats = group_spec(grp)
+            terms, rules = group_spec(grp)
+            g_hi = [re.compile(r"(?<![a-z0-9])" + re.escape(norm(k)) + r"(?![a-z0-9])")
+                    for k in grp["highlight"]] if "highlight" in grp else hi
+            g_ex = ex + [re.compile(r"(?<![a-z0-9])" + re.escape(norm(k)) + r"(?![a-z0-9])")
+                         for k in grp.get("exclude", [])]
             got = []
             for url in gnews_urls(terms, grp.get("locale", "BR")):
                 try:
@@ -302,7 +383,7 @@ def run_news(cfg, state, now, errors):
                     errors.append(f"Setores / {sector['name']} / {grp['name']}: "
                                   f"{type(exc).__name__}: {str(exc)[:120]}")
                 time.sleep(1)  # gentileza com o Google Notícias
-            added = 0
+            added = highlighted = 0
             for it in got:
                 iid = item_id(it["url"], it["title"])
                 if iid in state or iid in added_ids:
@@ -310,12 +391,15 @@ def run_news(cfg, state, now, errors):
                 fetched.add(iid)
                 title = strip_outlet(it["title"], it.get("outlet", ""))
                 ntitle = norm(title)
-                if any(p.search(ntitle) for p in ex):
+                if any(p.search(ntitle) for p in g_ex):
                     continue
-                ftitle = fold_keep_case(title)
-                tags = list(dict.fromkeys(m for m, p in pats if p.search(ftitle)))
+                tags = match_tags(title, rules)
                 if not tags or added >= cap:
                     continue
+                toks = title_tokens(title)
+                if is_near_dup(toks, recent):
+                    continue
+                recent.append(toks)
                 pub = ""
                 try:
                     pub = parsedate_to_datetime(it["published"]).astimezone(timezone.utc).isoformat()
@@ -323,14 +407,18 @@ def run_news(cfg, state, now, errors):
                     pass
                 added += 1
                 added_ids.add(iid)
+                is_hi = (any(p.search(ntitle) for p in g_hi) and highlighted < hcap
+                         and not any(p.search(ntitle) for p in hx))
+                highlighted += is_hi
                 out.append({
                     "kind": "news", "id": iid, "title": title, "url": it["url"],
                     "snippet": "", "outlet": it.get("outlet", ""), "pub": pub,
                     "sector_name": sector["name"], "group": grp["name"],
                     "themes": tags, "agency": sector["name"], "sector": grp["name"],
                     "source": f"{sector['name']} / {grp['name']}",
-                    "priority": "alta" if any(p.search(ntitle) for p in hi) else "baixa",
+                    "priority": "alta" if is_hi else "baixa",
                 })
+    rank_highlights(out, ncfg)
     for iid in fetched:  # só marca como visto depois de todos os grupos olharem
         state[iid] = now.isoformat()
     # mesma notícia em grupos diferentes: fica no primeiro
